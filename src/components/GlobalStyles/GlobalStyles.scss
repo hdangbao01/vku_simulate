@@ -1,0 +1,42 @@
+@import 'normalize.css';
+
+:root {
+    --primaryV: #c82032;
+    --primaryK: #f7961e;
+    --primaryU: #374f8a;
+    --textColor: #000;
+}
+
+html, body, #root {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 62.5%;
+}
+
+body {
+    font-size: 1.6rem;
+    line-height: 1.5;
+    text-rendering: optimizespeed;
+    color: var(--textColor);
+}
+
+button,
+input,
+[tabindex] {
+    outline: none;
+}
+
+a[href] {
+    color: var(--textColor);
+    text-decoration: none;
+}

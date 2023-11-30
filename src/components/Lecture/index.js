@@ -1,29 +1,21 @@
-import { useLoader } from '@react-three/fiber'
-import { useEffect } from 'react'
-import { BufferAttribute, Color } from 'three'
+import { useFrame, useLoader } from '@react-three/fiber'
+import { useRef } from 'react';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 
-const Lecture = () => {
+const Lecture = ({ rotation }) => {
+    const gltf = useLoader(GLTFLoader, process.env.PUBLIC_URL + 'models/vku_object.glb')
 
-    // const gltf = useLoader(GLTFLoader, process.env.PUBLIC_URL + 'models/vku_model_new.glb')
-    const gltf = useLoader(GLTFLoader, process.env.PUBLIC_URL + 'models/vku_object.glb').scene
+    const sphereRef = useRef();
 
-    // useEffect(() => {
-    //     if (!gltf) return
-
-    //     let mesh = gltf.scene.children[0]
-
-    //     var uvs = mesh.geometry.attributes.uv.array
-    //     mesh.geometry.setAttribute('uv2', new BufferAttribute(uvs, 2))
-
-    //     mesh.material.lightMap = mesh.material.map
-    //     mesh.material.lightMapIntensity = 400
-    //     mesh.material.color = new Color(0.04, 0.06, 0.1)
-    // }, [gltf])
+    useFrame(() => {
+        if (rotation) {
+            sphereRef.current.rotation.y -= 0.002;
+        }
+    });
 
     return (
-        <mesh>
-            <primitive object={gltf} />
+        <mesh ref={sphereRef}>
+            <primitive object={gltf.scene} />
         </mesh>
     )
 }

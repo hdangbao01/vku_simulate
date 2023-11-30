@@ -1,9 +1,9 @@
 import Home from '~/pages/Home';
-import Room from '~/pages/Room';
+import Campus from '~/pages/Campus';
 
 const publicRoutes = [
     { path: '/', component: Home },
-    { path: '/room', component: Room }
+    { path: '/campus', component: Campus }
 ]
 
 const privateRoutes = []

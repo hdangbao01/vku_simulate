@@ -19,6 +19,16 @@ module.exports = {
       },
       width: {
         '715': '715px',
+        '40': '40%',
+      },
+      minWidth: {
+        '278': '278px',
+      },
+      inset: {
+        '45vh': '45vh',
+      },
+      boxShadow: {
+        'bx': '0 2px 15px #02022b33',
       }
     },
   },

@@ -5,6 +5,12 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 const Lecture = ({ rotation }) => {
     const gltf = useLoader(GLTFLoader, process.env.PUBLIC_URL + 'models/vku_object.glb')
 
+    gltf.scene.traverse((child) => {
+        if (child.isMesh) {
+            child.castShadow = true;
+        }
+    });
+
     const sphereRef = useRef();
 
     useFrame(() => {
@@ -14,7 +20,7 @@ const Lecture = ({ rotation }) => {
     });
 
     return (
-        <mesh ref={sphereRef}>
+        <mesh ref={sphereRef} castShadow>
             <primitive object={gltf.scene} />
         </mesh>
     )

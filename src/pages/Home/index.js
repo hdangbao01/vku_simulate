@@ -27,8 +27,9 @@ function LightWithHelper() {
     }, [scene]);
 
     return (
-        <directionalLight ref={lightRef} color="white" position={[50, 50, 100]}
-        />
+        <directionalLight ref={lightRef} color="white" intensity={1.5} position={[-70, 100, -100]} castShadow shadow-mapSize={[1024, 1024]}>
+            <orthographicCamera attach={"shadow-camera"} args={[-150, 150, 150, -150]} />
+        </directionalLight>
     );
 }
 
@@ -36,7 +37,7 @@ function Home() {
     return (
         <div className='w-full h-full relative'>
             <Header />
-            <Canvas>
+            <Canvas shadows>
                 <Physics broadphase="SAP" gravity={[0, -2.6, 0]}>
                     {/* <SceneContainer posPerspectiveCamera={[-70, 50, 110]} autoRotate={false} /> */}
 
@@ -53,12 +54,13 @@ function Home() {
                             enableZoom={false}
                         />
                         <group position={[-40, 0, -50]} scale={[0.75, 0.75, 0.75]}>
-                            <Land rotation={false} />
-                            <Lecture rotation={false} />
+                            <Land rotation={true} />
+                            <Lecture rotation={true} />
                         </group>
                     </Suspense>
                 </Physics>
                 <ambientLight intensity={0.25} />
+                {/* <directionalLight color="white" position={[50, 50, 100]} /> */}
                 <axesHelper args={[100]} />
                 <LightWithHelper />
             </Canvas>
@@ -73,7 +75,6 @@ function Home() {
                 <p className='uppercase text-xl font-normal'>Xem thêm</p>
             </div>
         </div>
-        // <Load />
     )
 }
 

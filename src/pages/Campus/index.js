@@ -27,8 +27,9 @@ function LightWithHelper() {
     }, [scene]);
 
     return (
-        <directionalLight ref={lightRef} color="white" position={[50, 50, 100]}
-        />
+        <directionalLight ref={lightRef} color="white" intensity={1.5} position={[-70, 100, -100]} castShadow shadow-mapSize={[1024, 1024]}>
+            <orthographicCamera attach={"shadow-camera"} args={[-150, 150, 150, -150]} />
+        </directionalLight>
     );
 }
 
@@ -41,20 +42,10 @@ function Room() {
         setThirdPerson(!thirdPerson);
     }
 
-    // useEffect(() => {
-    //     function seenHandle() {
-    //         if (thirdPerson) setCameraPosition([-10, 50, 110 + Math.random() * 0.01]);
-    //     }
-
-    //     function outHandle() {
-    //         setThirdPerson(!thirdPerson);
-    //     }
-    // }, [thirdPerson]);
-
     return (
         <div className='w-full h-full relative'>
             <Header />
-            <Canvas>
+            <Canvas shadows>
                 <Physics broadphase="SAP" gravity={[0, -2.6, 0]}>
                     {/* <SceneContainer posPerspectiveCamera={[-10, 50, 110]} autoRotate={false} /> */}
 
@@ -66,10 +57,11 @@ function Room() {
                                 target={[0, 0, 0]}
                                 maxPolarAngle={Math.PI * 0.5}
                                 autoRotate={false} autoRotateSpeed={-1.5}
+                                // enableZoom={false}
                             />
                         )}
                         <Land rotation={false} />
-                        {/* <Lecture rotation={false} /> */}
+                        <Lecture rotation={false} />
                         <Car thirdPerson={thirdPerson} />
                     </Suspense>
                 </Physics>
@@ -77,11 +69,13 @@ function Room() {
                 <axesHelper args={[100]} />
                 <LightWithHelper />
             </Canvas>
-            <img className='w-1/4 fixed top-6 left-6 shadow-bx' src={require('~/assets/images/mapp.jpg')} alt='Map-VKU' />
+            <div className='w-1/4 fixed top-6 left-6 shadow-bx bg-white'>
+                <img className='w-full' src={require('~/assets/images/mapp.jpg')} alt='Map-VKU' />
+            </div>
             {thirdPerson ?
                 <div className='fixed top-6 right-6 shadow-bx px-8 py-4 bg-white rounded-3xl'>
                     <p>Điều khiển</p>
-                    <p>w: tiến</p> 
+                    <p>w: tiến</p>
                     <p>w + a: quay trái</p>
                     <p>w + d: quay phải</p>
                     <p>s: lùi</p>

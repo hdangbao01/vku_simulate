@@ -15,6 +15,12 @@ const Land = ({ rotation }) => {
 
     const gltf = useLoader(GLTFLoader, process.env.PUBLIC_URL + 'models/land.glb')
 
+    gltf.scene.traverse((child) => {
+        if (child.isMesh) {
+            child.receiveShadow = true;
+        }
+    });
+
     const sphereRef = useRef();
 
     useFrame(() => {
@@ -23,8 +29,9 @@ const Land = ({ rotation }) => {
         }
     });
 
+
     return (
-        <mesh ref={sphereRef} onClick={(e) => console.log(e.target)}>
+        <mesh ref={sphereRef} onClick={(e) => console.log(e.target)} receiveShadow>
             <primitive object={gltf.scene} />
         </mesh>
     )

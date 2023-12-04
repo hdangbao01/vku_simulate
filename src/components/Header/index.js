@@ -4,8 +4,8 @@ import NavItem from '~/components/NavItem'
 
 const items = [
     { label: 'Trang chủ', link: '/', active: true },
-    { label: 'Khuân viên', link: '/campus', },
-    { label: 'Phòng học' },
+    { label: 'Khuân viên', link: '/campus' },
+    { label: 'Phòng học', link: '/room' },
     { label: 'Thiết kế' },
     { label: 'Khám phá' }
 ]

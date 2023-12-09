@@ -1,16 +1,24 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, BrowserRouter } from 'react-router-dom';
 import { publicRoutes } from '~/routes';
+import AuthProvider from './Context/AuthProvider';
+import AppProvider from './Context/AppProvider';
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        {publicRoutes.map((route, i) => {
-          const Page = route.component
-          return <Route key={i} path={route.path} element={<Page />} />
-        })}
-      </Routes>
-    </Router>
+    <BrowserRouter>
+      {/* <Router> */}
+      <AuthProvider>
+        <AppProvider>
+          <Routes>
+            {publicRoutes.map((route, i) => {
+              const Page = route.component
+              return <Route key={i} path={route.path} element={<Page />} />
+            })}
+          </Routes>
+        </AppProvider>
+      </AuthProvider>
+      {/* </Router> */}
+    </BrowserRouter>
   );
 }
 

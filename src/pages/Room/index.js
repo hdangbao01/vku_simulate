@@ -1,7 +1,7 @@
 import Header from "~/components/Header";
 import { Suspense, useEffect, useRef } from "react";
 import { Canvas, useLoader, useThree } from '@react-three/fiber'
-import { DirectionalLightHelper, MeshStandardMaterial, PointLightHelper, SpotLightHelper } from 'three';
+import { DirectionalLightHelper, MeshStandardMaterial } from 'three';
 import { Environment, OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import Load from "~/components/Load";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
@@ -19,7 +19,6 @@ function LightWithHelper() {
 
     useEffect(() => {
         if (lightRef.current) {
-            // const helper = new PointLightHelper(lightRef.current, 1);
             const helper = new DirectionalLightHelper(lightRef.current, 1);
             scene.add(helper);
 
@@ -33,8 +32,6 @@ function LightWithHelper() {
 
     return (
         <>
-            {/* <pointLight ref={lightRef} args={["#fff", 20]} position={[0, 4.5, 0]} castShadow /> */}
-            {/* <pointLight ref={lightRef} args={["#fff", 50]} position={[0, 3.5, 0]} castShadow /> */}
             <directionalLight ref={lightRef} color="white" intensity={5} position={[0, 5, 0]} castShadow />
         </>
     );

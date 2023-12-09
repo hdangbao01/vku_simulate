@@ -1,15 +1,7 @@
-import { useLoader } from '@react-three/fiber'
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
-
-const Classroom = () => {
-
-    const gltf = useLoader(GLTFLoader, process.env.PUBLIC_URL + 'models/room_model.glb')
-
-    return (
-        <mesh onClick={(e) => console.log(e.target)}>
-            <primitive object={gltf.scene} />
-        </mesh>
-    )
+function ClassRoom() {
+    return <div className="">
+        ClassRoom
+    </div>
 }
 
-export default Classroom;
+export default ClassRoom;

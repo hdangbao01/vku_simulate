@@ -5,9 +5,21 @@ import NavItem from '~/components/NavItem'
 const items = [
     { label: 'Trang chủ', link: '/', active: true },
     { label: 'Khám phá', link: '/campus' },
-    { label: 'Tất cả phòng', link: '/room' },
-    { label: 'Thiết kế', link: '/design' },
-    { label: 'Phòng học', link: '/learn' }
+    {
+        label: 'Tất cả phòng', link: '/room',
+        drops: [
+            {
+                name: "Phòng học",
+                link: './classroom'
+            },
+            {
+                name: "Phòng Cinema",
+                link: './cinema'
+            }
+        ]
+    },
+    { label: 'Phòng học', link: '/meeting' },
+    { label: 'Login', link: '/login' }
 ]
 
 const NavItemContainer = () => (

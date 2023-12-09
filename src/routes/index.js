@@ -8,8 +8,8 @@ const publicRoutes = [
     { path: '/', component: Home },
     { path: '/campus', component: Campus },
     { path: '/room', component: Room },
-    { path: '/meeting', component: Meeting },
-    { path: '/login', component: Login }
+    { path: '/meeting', component: Meeting, auth: true },
+    { path: '/login', component: Login, auth: true }
 ]
 
 const privateRoutes = []

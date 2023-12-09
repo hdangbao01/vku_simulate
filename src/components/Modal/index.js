@@ -11,13 +11,14 @@ function Modal() {
     const { data } = useContext(AuthContext)
     const cancelButtonRef = useRef(null)
     const [name, setName] = useState('')
+    const [decs, setDecs] = useState('')
 
     const handleAddRoom = () => {
         try {
             const docRef = addDoc(collection(db, "rooms"), {
                 name: name,
-                decs: name,
-                members: [data.uid],
+                decs: decs,
+                members: [],
                 createdAt: serverTimestamp()
             })
             console.log("Document written with ID: ", docRef);
@@ -25,6 +26,8 @@ function Modal() {
             console.error("Error adding document: ", e);
         }
         setOpenModal(false)
+        setName('')
+        setDecs('')
     }
 
     return (
@@ -60,10 +63,14 @@ function Modal() {
                                         <button onClick={() => setOpenModal(false)}><IoClose /></button>
                                     </div>
                                 </div>
-                                <div className="bg-white px-4 pb-4 pt-5">
-                                    <div className="flex items-center">
+                                <div className="bg-white px-4 pt-4">
+                                    <div className="flex items-center pb-4">
                                         <p className="mr-4 w-1/4">Tên phòng</p>
                                         <input value={name} onChange={(e) => setName(e.target.value)} className="border w-3/4 border-black rounded-md px-4 py-2" type="text" placeholder="Nhập tên phòng..." />
+                                    </div>
+                                    <div className="flex items-center pb-4">
+                                        <p className="mr-4 w-1/4">Mô tả</p>
+                                        <input value={decs} onChange={(e) => setDecs(e.target.value)} className="border w-3/4 border-black rounded-md px-4 py-2" type="text" placeholder="Nhập mô tả..." />
                                     </div>
                                 </div>
                                 <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">

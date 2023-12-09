@@ -18,7 +18,7 @@ function AuthProvider({ children }) {
                 setData({ displayName, email, uid, photoURL })
                 navigate('/meeting')
                 setIsLoading(false);
-                // return
+                return
             } else {
                 setIsLoading(false)
                 navigate('/login?email=&password=')
@@ -30,7 +30,8 @@ function AuthProvider({ children }) {
 
     return (
         <AuthContext.Provider value={{ data }}>
-            {isLoading ? <Load /> : children}
+            {/* {isLoading ? <Load /> : children} */}
+            {children}
         </AuthContext.Provider>
     );
 }

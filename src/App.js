@@ -7,16 +7,20 @@ function App() {
   return (
     <BrowserRouter>
       {/* <Router> */}
-      <AuthProvider>
-        <AppProvider>
-          <Routes>
-            {publicRoutes.map((route, i) => {
-              const Page = route.component
-              return <Route key={i} path={route.path} element={<Page />} />
-            })}
-          </Routes>
-        </AppProvider>
-      </AuthProvider>
+      <Routes>
+        {publicRoutes.map((route, i) => {
+          const Page = route.component
+          return <Route key={i} path={route.path} element={
+            route.auth ?
+              <AuthProvider>
+                <AppProvider>
+                  <Page />
+                </AppProvider>
+              </AuthProvider>
+              : <Page />
+          } />
+        })}
+      </Routes>
       {/* </Router> */}
     </BrowserRouter>
   );

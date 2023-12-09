@@ -1,13 +1,15 @@
-import Header from "~/components/Header";
 import { Suspense, useEffect, useRef } from "react";
-
+import { Environment, OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import { Canvas, useThree } from '@react-three/fiber'
 import { DirectionalLightHelper } from 'three';
 import { Physics } from "@react-three/cannon";
-import { Environment, OrbitControls, PerspectiveCamera } from "@react-three/drei";
-import Land from "~/components/Land";
+
+import Header from "~/components/Header";
 import Lecture from "~/components/Lecture";
+import Land from "~/components/Land";
 import Load from "~/components/Load";
+
+import { MdOutlineKeyboardDoubleArrowRight } from 'react-icons/md'
 
 function LightWithHelper() {
     const lightRef = useRef();
@@ -71,8 +73,8 @@ function Home() {
                 <p className='text-2xl font-normal my-8'>Trường Đại học Công nghệ Thông tin và Truyền thông Việt – Hàn là cơ sở đào tạo,
                     nghiên cứu khoa học, chuyển giao công nghệ, đổi mới sáng tạo, khởi nghiệp, phục vụ
                     cộng đồng lớn và uy tín của cả nước về các lĩnh vực công nghệ thông tin, truyền thông
-                    và các lĩnh vực liên quan theo mô hình đại học định hướng ứng dụng.</p>
-                <p className='uppercase text-xl font-normal'>Xem thêm</p>
+                    và các lĩnh vực liên quan theo mô hình đại học định hướng ứng dụng...</p>
+                <p className='flex items-center text-2xl font-normal'>Khám phá ngay <MdOutlineKeyboardDoubleArrowRight  className='text-3xl' /></p>
             </div>
         </div>
     )

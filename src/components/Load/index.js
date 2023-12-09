@@ -9,17 +9,17 @@ const Load = () => {
     // const { active, progress, errors, item, loaded, total } = useProgress();
 
     return (
-        // <Html center>
-        //     <div className={cx('mainer')}>
-        //         <div className={cx('loader')}>
-        //             <div className={cx('progress')}>{`${progress}% loaded`}</div>
-        //         </div>
-        //     </div>
-        // </Html>
-        <div className={cx('mainer')}>
-            <div className={cx('loader')}>
+        <Html center>
+            {/* <div className={cx('mainer')}>
+                <div className={cx('loader')}>
+                    <div className={cx('progress')}>{`${progress}% loaded`}</div>
+                </div>
+            </div> */}
+            <div className={cx('mainer')}>
+                <div className={cx('loader')}>
+                </div>
             </div>
-        </div>
+        </Html>
     );
 };
 

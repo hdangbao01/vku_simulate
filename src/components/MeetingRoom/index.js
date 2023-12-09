@@ -26,11 +26,25 @@ function MeetingRoom() {
         });
     }
     const handleSelectedRoom = async (roomId) => {
-        setSelectedRoomId(roomId)
+        // Out Room
+        if (selectedRoom.members !== undefined) {
+            const arr = selectedRoom.members.filter((item) => {
+                return item.indexOf(data.uid) === -1
+            })
 
+            const selectRoomOut = allRoom.find(room => room.id === selectedRoom.id)
+            if (selectRoomOut.members.includes(data.uid)) {
+                const docRef = doc(db, "rooms", selectRoomOut.id);
+                await setDoc(docRef, { ...selectRoomOut, members: [...arr] });
+            }
+        }
+
+        // Join Room
+        setSelectedRoomId(roomId)
         const selectRoom = allRoom.find(room => room.id === roomId)
 
         if (!selectRoom.members.includes(data.uid)) {
+            console.log('join');
             const docRef = doc(db, "rooms", roomId);
 
             await setDoc(docRef, { ...selectRoom, members: [...selectRoom.members, data.uid] });
@@ -90,9 +104,7 @@ function MeetingRoom() {
                 block: "end",
             });
         }
-        console.log(allMess.length);
     }, [allMess.length]);
-
 
     return <div className="w-screen h-screen">
         <div className="fixed w-1/5 bg-white right-0 top-0 bottom-0">
@@ -110,7 +122,7 @@ function MeetingRoom() {
                     <button onClick={() => setOpenModal(true)} className="mr-2 flex justify-center items-center text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:bg-blue-700 font-medium rounded-lg text-sm p-2 text-center">
                         <FaPlus className="text-base" />
                     </button>
-                    <div className="cursor-pointer hover:text-blue-500" onClick={() => setOpenModal(true)}>Add Room</div>
+                    <div className="cursor-pointer hover:text-blue-600" onClick={() => setOpenModal(true)}>Add Room</div>
                 </div>
                 <div className="flex items-center pt-4 pb-2">
                     {/* <RiDropdownList /> <p className="ml-2">Danh sách phòng</p> */}
@@ -122,7 +134,7 @@ function MeetingRoom() {
                 <ul className="font-light">
                     {allRoom && allRoom.map(room => <li key={room.id}
                         onClick={() => handleSelectedRoom(room.id)}
-                        className={`flex items-center ml-6 py-1 hover:text-blue-500 hover:font-normal cursor-pointer ${room?.id === selectedRoomId && `text-blue-500 font-normal`}`}
+                        className={`flex items-center ml-6 py-1 hover:text-blue-600 hover:font-normal cursor-pointer ${room?.id === selectedRoomId && `text-blue-600 font-normal`}`}
                     >
                         <BsDot /> {room?.name} {room?.id === selectedRoomId && <TfiControlBackward className="ml-1 font-semibold" />}
                     </li>)}

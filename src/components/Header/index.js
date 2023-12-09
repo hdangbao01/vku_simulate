@@ -4,13 +4,16 @@ import NavItem from '~/components/NavItem'
 
 const items = [
     { label: 'Trang chủ', link: '/', active: true },
-    { label: 'Khám phá', link: '/campus' },
     {
-        label: 'Tất cả phòng', link: '/room',
+        label: 'Khám phá',
         drops: [
             {
+                name: "VKU",
+                link: './campus'
+            },
+            {
                 name: "Phòng học",
-                link: './classroom'
+                link: './room'
             },
             {
                 name: "Phòng Cinema",
@@ -18,13 +21,13 @@ const items = [
             }
         ]
     },
-    { label: 'Phòng học', link: '/meeting' },
-    { label: 'Login', link: '/login' }
+    { label: 'Thiết kế', link: '/design' },
+    { label: 'Phòng học', link: '/meeting' }
 ]
 
 const NavItemContainer = () => (
     <>
-        {items.map((item, i) => <NavItem item={item} key={i} />)}
+        {items.map((item, i) => <NavItem item={item} key={item.label} />)}
     </>
 )
 

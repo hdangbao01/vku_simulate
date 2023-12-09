@@ -18,7 +18,7 @@ module.exports = {
         border: '#444',
       },
       width: {
-        'header': '731px',
+        'header': '590px',
         '40': '40%',
       },
       minWidth: {

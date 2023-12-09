@@ -80,10 +80,10 @@ function Room() {
                     <p>w + d: quay phải</p>
                     <p>s: lùi</p>
                 </div> : <></>}
-            <button className='w-36 h-12 text-xl rounded-full fixed bottom-6 right-6 shadow-bx bg-white'
+            <button className='h-12 text-xl rounded-full fixed bottom-6 right-6 shadow-bx bg-white px-6'
                 onClick={seenHandle}
             >
-                {thirdPerson ? 'Thoát' : 'Xem'}
+                {thirdPerson ? 'Thoát' : 'Xem thực tế'}
             </button>
         </div>
     )

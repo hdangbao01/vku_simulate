@@ -3,21 +3,58 @@ import { AuthContext } from "~/Context/AuthProvider";
 import Modal from "../Modal";
 import { signOut } from 'firebase/auth'
 import { auth, db } from "~/firebase/config";
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, Suspense, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { addDoc, collection, doc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { RiDropdownList } from "react-icons/ri";
-import { IoSend } from "react-icons/io5";
+import { IoClose, IoSend } from "react-icons/io5";
 import { FaPlus } from "react-icons/fa";
 import { BsDot } from "react-icons/bs";
 import { TfiControlBackward } from "react-icons/tfi";
 import useFirestore from "~/hook/useFirestore";
 import { formatRelative } from "date-fns";
+import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
+import { DirectionalLightHelper, MeshStandardMaterial, Vector3, VideoTexture } from "three";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+import { Environment, OrbitControls, PerspectiveCamera } from "@react-three/drei";
+import Load from "../Load";
+import { Dialog, Transition } from "@headlessui/react";
+
+function LightWithHelper() {
+    const lightRef = useRef();
+    const { scene } = useThree();
+
+    useEffect(() => {
+        if (lightRef.current) {
+            const helper = new DirectionalLightHelper(lightRef.current, 1);
+            scene.add(helper);
+
+            return () => {
+                if (helper) {
+                    scene.remove(helper);
+                }
+            };
+        }
+    }, [scene]);
+
+    return (
+        <>
+            <directionalLight ref={lightRef} color="white" intensity={5} position={[0, 5, 0]} castShadow />
+        </>
+    );
+}
 
 function MeetingRoom() {
     const { data } = useContext(AuthContext)
     const { selectedRoomId, setSelectedRoomId, selectedRoom, setOpenModal, members, allRoom } = useContext(AppContext)
     const [input, setInput] = useState('')
+    const [openSelectChair, setOpenSelectChair] = useState(false)
+    const [cameraPOV, setCameraPOV] = useState([0, 0, 4])
+    const [orbitCamera, setOrbitCamera] = useState([0, 3, 0])
+    const [selectedChair, setSelectedChair] = useState([])
+    const [outChair, setOutChair] = useState(false)
+    const cancelButtonRef = useRef(null)
 
+    // handle Website
     const handleSignOut = async () => {
         await signOut(auth).then(() => {
             console.log("Sign-out successful");
@@ -49,6 +86,21 @@ function MeetingRoom() {
 
             await setDoc(docRef, { ...selectRoom, members: [...selectRoom.members, data.uid] });
         }
+    }
+
+    const handleOutRoom = async () => {
+        if (selectedRoom.members !== undefined) {
+            const arr = selectedRoom.members.filter((item) => {
+                return item.indexOf(data.uid) === -1
+            })
+
+            const selectRoomOut = allRoom.find(room => room.id === selectedRoom.id)
+            if (selectRoomOut.members.includes(data.uid)) {
+                const docRef = doc(db, "rooms", selectRoomOut.id);
+                await setDoc(docRef, { ...selectRoomOut, members: [...arr] });
+            }
+        }
+        setSelectedRoomId(null)
     }
 
     const handleSubmit = () => {
@@ -106,6 +158,151 @@ function MeetingRoom() {
         }
     }, [allMess.length]);
 
+    // handle 3D
+    const materialWall = new MeshStandardMaterial({ color: "#E7CBA9" });
+
+    const room = useLoader(GLTFLoader, process.env.PUBLIC_URL + 'models/room_model.glb')
+    const chair = useLoader(GLTFLoader, process.env.PUBLIC_URL + 'models/chair_room.glb')
+    const wall_room = useLoader(GLTFLoader, process.env.PUBLIC_URL + 'models/wall_room.glb')
+    const floor = useLoader(GLTFLoader, process.env.PUBLIC_URL + 'models/floor_room.glb')
+
+    useEffect(() => {
+        if (!room) return;
+        if (!wall_room) return;
+        if (!floor) return;
+        if (!chair) return;
+
+        room.scene.traverse((child) => {
+            if (child.isMesh) {
+                child.castShadow = true;
+                child.receiveShadow = true;
+            }
+        });
+
+        wall_room.scene.traverse((child) => {
+            if (child.isMesh) {
+                child.receiveShadow = true;
+                child.material = materialWall;
+            }
+        });
+
+        floor.scene.traverse((child) => {
+            if (child.isMesh) {
+                child.receiveShadow = true;
+            }
+        });
+
+        chair.scene.traverse((child) => {
+            if (child.isMesh) {
+                child.castShadow = true;
+                child.receiveShadow = true;
+            }
+        });
+
+    }, [room, chair, wall_room, floor]);
+
+    const Room = () => {
+        return <mesh>
+            <primitive object={room.scene} />
+        </mesh>
+    }
+
+    const handlSelectChair = () => {
+        setCameraPOV(selectedChair)
+        setOrbitCamera([0.15, 3.25, -6.04])
+        setOpenSelectChair(false)
+        setOutChair(true)
+    }
+
+    const handeOutChair = () => {
+        setCameraPOV([0, 0, 4])
+        setOrbitCamera([0, 3, 0])
+        setOutChair(false)
+    }
+
+    const Chair = () => {
+        const { camera, pointer, raycaster } = useThree()
+        const [selectedMesh, setSelectedMesh] = useState(null);
+
+        useFrame(() => {
+            raycaster.setFromCamera(pointer, camera)
+            const intersects = raycaster.intersectObjects(chair.scene.children);
+
+            if (intersects.length > 0) {
+                const mesh = intersects[0].object;
+                if (mesh !== selectedMesh) {
+                    setSelectedMesh(mesh);
+                }
+            } else {
+                if (selectedMesh) {
+                    setSelectedMesh(null);
+                }
+            }
+        });
+        const handleClick = (e) => {
+            if (selectedMesh) {
+                const worldPosition = new Vector3();
+                selectedMesh.getWorldPosition(worldPosition);
+                console.log('Selected mesh:', worldPosition);
+                setSelectedChair(worldPosition)
+            }
+            setOpenSelectChair(true)
+        };
+
+        return <mesh
+            onClick={(e) => handleClick(e)}
+        >
+            <primitive object={chair.scene} />
+        </mesh>
+    }
+
+    const Wall = () => {
+        return <mesh materialWall={materialWall} >
+            <primitive object={wall_room.scene} />
+            <meshBasicMaterial />
+        </mesh>
+    }
+
+    const Floor = () => {
+        return <mesh>
+            <primitive object={floor.scene} />
+            <meshBasicMaterial />
+        </mesh>
+    }
+
+    const PlaneVideo = () => {
+        // const texture = useVideoTexture(process.env.PUBLIC_URL + 'videos/sunflower.3gp')
+
+        let model = {}
+        model.video = document.createElement("video")
+        model.video.muted = false
+        model.video.loop = true
+        model.video.controls = true
+        model.video.playsInline = true
+        model.video.autoplay = false
+        model.video.src = process.env.PUBLIC_URL + 'videos/mv.mp4'
+
+        const handleClickScreen = () => {
+
+            if (model.video.paused) {
+                model.video.play()
+            } else {
+                model.video.pause()
+            }
+        }
+
+        const texture = new VideoTexture(model.video)
+
+        return (
+            <Suspense fallback={null}>
+                <mesh position={[0.15, 3.25, -6.04]} onClick={handleClickScreen}>
+                    <planeGeometry args={[3.3, 2.5]} />
+                    <meshBasicMaterial map={texture} toneMapped={false} />
+                </mesh>
+            </Suspense>
+        )
+    }
+
     return <div className="w-screen h-screen">
         <div className="fixed w-1/5 bg-white right-0 top-0 bottom-0">
             <div className="h-10 flex justify-between mx-4 my-4">
@@ -113,8 +310,8 @@ function MeetingRoom() {
                     <img className="w-10 h-10 rounded-full object-cover" src={data?.photoURL} alt="Avatar" />
                     <p className="ml-2">{data?.displayName}</p>
                 </div>
-                <button onClick={handleSignOut} className="flex justify-center items-center text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:bg-blue-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
-                    Sign out
+                <button onClick={handleSignOut} className="flex justify-center items-center text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:bg-blue-700 font-medium rounded-xl text-sm px-5 py-2.5 text-center">
+                    Đăng xuất
                 </button>
             </div>
             <div className="border-t border-b-gray-950 border-solid px-4 py-4">
@@ -122,14 +319,13 @@ function MeetingRoom() {
                     <button onClick={() => setOpenModal(true)} className="mr-2 flex justify-center items-center text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:bg-blue-700 font-medium rounded-lg text-sm p-2 text-center">
                         <FaPlus className="text-base" />
                     </button>
-                    <div className="cursor-pointer hover:text-blue-600" onClick={() => setOpenModal(true)}>Add Room</div>
+                    <div className="cursor-pointer hover:text-blue-600" onClick={() => setOpenModal(true)}>Tạo phòng</div>
                 </div>
                 <div className="flex items-center pt-4 pb-2">
-                    {/* <RiDropdownList /> <p className="ml-2">Danh sách phòng</p> */}
                     <button className="mr-2 flex justify-center items-center text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:bg-blue-700 font-medium rounded-lg text-sm p-2 text-center">
                         <RiDropdownList className="text-base" />
                     </button>
-                    <div>List Room</div>
+                    <div>Danh sách phòng</div>
                 </div>
                 <ul className="font-light">
                     {allRoom && allRoom.map(room => <li key={room.id}
@@ -141,11 +337,11 @@ function MeetingRoom() {
                 </ul>
             </div>
         </div>
-        <div className="fixed w-4/5 bg-black left-0 top-0 bottom-0 text-white overflow-hidden">
-            <div className="fixed w-96 h-96 left-6 bottom-6 bg-white rounded-3xl text-black">
-                <p className="mx-5 my-3">Room Chat {selectedRoom?.name}</p>
+        <div className="fixed w-4/5 h-screen left-0 top-0 bottom-0">
+            <div className="z-10 fixed w-96 h-96 left-6 bottom-6 bg-white rounded-3xl text-black">
+                <p className="mx-5 my-3">Phòng {selectedRoom?.name}</p>
                 <div className="flex items-center border-t border-b-gray-950 border-solid px-4 py-4">
-                    Member: {members.map(member => <img key={member?.uid} className="w-9 h-9 rounded-full object-cover ml-2" src={member?.photoURL} alt="Avatar" />)}
+                    Thành viên: {members.map(member => <img key={member?.uid} className="w-9 h-9 rounded-full object-cover ml-2" src={member?.photoURL} alt="Avatar" />)}
                 </div>
                 <div className="overflow-auto h-52 flex flex-col">
                     {allMess.map(mess => <div ref={refMess} key={mess?.id} className="flex items-center mb-2">
@@ -160,7 +356,7 @@ function MeetingRoom() {
                     </div>)}
                 </div>
                 <div className="w-full flex items-center absolute bottom-2 px-2">
-                    <input className="w-full font-light border border-bborder-b-gray-950 rounded-3xl px-4 py-2" type="text" placeholder="Type a message..."
+                    <input className="w-full font-light border border-bborder-b-gray-950 rounded-3xl px-4 py-2" type="text" placeholder="Nhập gì đó..."
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={handleKeyDown}
@@ -168,8 +364,103 @@ function MeetingRoom() {
                     <IoSend onClick={handleSubmit} className="w-10 text-xl cursor-pointer text-blue-600" />
                 </div>
             </div>
+            <div className="z-10 absolute right-6 bottom-6 font-medium text-sm text-white">
+                {outChair && <button onClick={handeOutChair} className="mr-6 rounded-xl px-5 py-2.5 text-center bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:bg-blue-700">
+                    Rời ghế
+                </button>}
+                {selectedRoomId && <button onClick={handleOutRoom} className="rounded-xl px-5 py-2.5 text-center bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:bg-blue-700">
+                    Rời phòng
+                </button>}
+            </div>
+            <Canvas shadows>
+                <Suspense fallback={<Load />}>
+                    <Environment
+                        // preset='park' blur={0}
+                        background={"only"} files={process.env.PUBLIC_URL + 'textures/rotes_rathaus_8k.hdr'} />
+                    <PerspectiveCamera makeDefault fov={70}
+                        position={cameraPOV}
+                    />
+                    <OrbitControls
+                        target={orbitCamera}
+                        // target={[0.15, 3.25, -6.04]}
+                        maxPolarAngle={Math.PI * 0.5}
+                        minPolarAngle={Math.PI * 0.5}
+                        enableZoom={false}
+                    />
+                    <Room />
+                    <Chair />
+                    <Wall />
+                    <Floor />
+                    <PlaneVideo />
+                </Suspense>
+                <ambientLight intensity={0.5} />
+                <axesHelper args={[100]} />
+                <LightWithHelper />
+            </Canvas>
+            {!selectedRoomId &&
+                <div className="z-20 absolute right-0 left-0 top-0 bottom-0 bg-black opacity-60">
+                    <div className="flex flex-col items-center justify-center h-full text-white">
+                        Vui lòng chọn 1 phòng để vào
+                    </div>
+                </div>
+            }
         </div>
         <Modal />
+        <Transition.Root show={openSelectChair} as={Fragment}>
+            <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={setOpenSelectChair}>
+                <Transition.Child
+                    as={Fragment}
+                    enter="ease-out duration-300"
+                    enterFrom="opacity-0"
+                    enterTo="opacity-100"
+                    leave="ease-in duration-200"
+                    leaveFrom="opacity-100"
+                    leaveTo="opacity-0"
+                >
+                    <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+                </Transition.Child>
+
+                <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+                    <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                        <Transition.Child
+                            as={Fragment}
+                            enter="ease-out duration-300"
+                            enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                            enterTo="opacity-100 translate-y-0 sm:scale-100"
+                            leave="ease-in duration-200"
+                            leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+                            leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                        >
+                            <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                                <div className="bg-white px-4 pb-4 pt-4">
+                                    <div className="flex items-start justify-between text-lg">
+                                        <div>Ngồi vào nghế</div>
+                                        <button onClick={() => setOpenSelectChair(false)}><IoClose /></button>
+                                    </div>
+                                </div>
+                                <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                                    <button
+                                        type="button"
+                                        className="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm text-white shadow-sm hover:bg-blue-700 sm:ml-3 sm:w-auto"
+                                        onClick={handlSelectChair}
+                                    >
+                                        Xác nhận
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                                        onClick={() => setOpenSelectChair(false)}
+                                        ref={cancelButtonRef}
+                                    >
+                                        Huỷ
+                                    </button>
+                                </div>
+                            </Dialog.Panel>
+                        </Transition.Child>
+                    </div>
+                </div>
+            </Dialog>
+        </Transition.Root>
     </div>
 }
 

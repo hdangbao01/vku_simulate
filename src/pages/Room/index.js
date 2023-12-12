@@ -19,7 +19,7 @@ function LightWithHelper() {
 
     useEffect(() => {
         if (lightRef.current) {
-            const helper = new DirectionalLightHelper(lightRef.current, 1);
+            const helper = new DirectionalLightHelper(lightRef.current, 2);
             scene.add(helper);
 
             return () => {
@@ -42,7 +42,8 @@ function Room() {
         color: "#E7CBA9"
     })
 
-    const room = useLoader(GLTFLoader, process.env.PUBLIC_URL + 'models/object_room.glb')
+    const room = useLoader(GLTFLoader, process.env.PUBLIC_URL + 'models/room_model.glb')
+    // const room = useLoader(GLTFLoader, process.env.PUBLIC_URL + 'models/object_room.glb')
     const wall_room = useLoader(GLTFLoader, process.env.PUBLIC_URL + 'models/wall_room.glb')
     const floor = useLoader(GLTFLoader, process.env.PUBLIC_URL + 'models/floor_room.glb')
 
@@ -96,7 +97,6 @@ function Room() {
                         minPolarAngle={Math.PI * 0.5}
                         enableZoom={false}
                     />
-
                     <mesh>
                         <primitive object={room.scene} />
                         <meshBasicMaterial />
@@ -107,18 +107,8 @@ function Room() {
                     </mesh>
                     <mesh>
                         <primitive object={floor.scene} />
+                        <meshBasicMaterial />
                     </mesh>
-
-                    {/* <mesh position={[0, 2, 0]} castShadow
-                    // onClick={() => setActive(!active)}
-                    // onPointerOver={() => setHover(true)}
-                    // onPointerOut={() => setHover(false)}
-                    >
-                        <boxGeometry args={[1, 1, 1]} />
-                        <meshStandardMaterial
-                        // color={hovered ? 'hotpink' : 'orange'} 
-                        />
-                    </mesh> */}
                 </Suspense>
 
                 <ambientLight intensity={0.5} />

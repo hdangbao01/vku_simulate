@@ -6,7 +6,7 @@ import { Html, useProgress } from '@react-three/drei';
 const cx = classNames.bind(styles)
 
 const Load = () => {
-    // const { active, progress, errors, item, loaded, total } = useProgress();
+    const { active, progress, errors, item, loaded, total } = useProgress();
 
     return (
         <Html center>
@@ -17,6 +17,7 @@ const Load = () => {
             </div> */}
             <div className={cx('mainer')}>
                 <div className={cx('loader')}>
+                    {progress && <div className={cx('progress')}>{`${progress}% loaded`}</div>}
                 </div>
             </div>
         </Html>

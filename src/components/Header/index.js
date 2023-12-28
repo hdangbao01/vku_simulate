@@ -19,21 +19,22 @@ const items = [
                 name: "Phòng Cinema",
                 link: './cinema'
             }
-        ]
+        ],
+        active: true
     },
-    { label: 'Thiết kế', link: '/design' },
-    { label: 'Phòng học', link: '/meeting' }
+    { label: 'Thiết kế', link: '/design', active: true },
+    { label: 'Phòng học', link: '/meeting', active: true }
 ]
 
-const NavItemContainer = () => (
-    <>
+const NavItemContainer = () => {
+    return <>
         {items.map((item, i) => <NavItem item={item} key={item.label} />)}
     </>
-)
+}
 
 const Header = () => {
     return (
-        <div className='w-header z-10 shadow-bx fixed top-6 left-2/4 -translate-x-2/4 flex h-16 bg-white rounded-full py-3 px-8 items-center text-lg font-normal'>
+        <div className='w-header z-10 shadow-bx fixed top-6 left-2/4 -translate-x-2/4 flex h-16 bg-white rounded-full py-3 px-8 items-center text-lg font-semibold'>
             <div className='h-full'>
                 <Link to="/">
                     <img className='h-full' src={require('~/assets/images/logo.png')} alt='Logo-VKU' />

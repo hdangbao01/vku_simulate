@@ -3,7 +3,6 @@ import { publicRoutes } from '~/routes';
 import AuthProvider from './Context/AuthProvider';
 import AppProvider from './Context/AppProvider';
 import { Suspense } from 'react';
-import Load from './components/Load';
 
 function App() {
   return (

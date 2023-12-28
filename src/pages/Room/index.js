@@ -1,34 +1,13 @@
 import Header from "~/components/Header";
 import { Suspense, useEffect, useRef } from "react";
-import { Canvas, useLoader, useThree } from '@react-three/fiber'
-import { DirectionalLightHelper, MeshStandardMaterial } from 'three';
+import { Canvas, useLoader } from '@react-three/fiber'
+import { MeshStandardMaterial } from 'three';
 import { Environment, OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import Load from "~/components/Load";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-import { useControls } from "leva";
 
 function LightWithHelper() {
-    const { x, y, z } = useControls({
-        x: { value: 0, min: 0, max: 50, step: 1 },
-        y: { value: 5, min: 0, max: 50, step: 1 },
-        z: { value: 0, min: 0, max: 50, step: 1 }
-    })
-
     const lightRef = useRef();
-    const { scene } = useThree();
-
-    useEffect(() => {
-        if (lightRef.current) {
-            const helper = new DirectionalLightHelper(lightRef.current, 2);
-            scene.add(helper);
-
-            return () => {
-                if (helper) {
-                    scene.remove(helper);
-                }
-            };
-        }
-    }, [scene]);
 
     return (
         <>
@@ -38,17 +17,12 @@ function LightWithHelper() {
 }
 
 function Room() {
-    const typh = useControls({
-        color: "#E7CBA9"
-    })
-
     const room = useLoader(GLTFLoader, process.env.PUBLIC_URL + 'models/room_model.glb')
-    // const room = useLoader(GLTFLoader, process.env.PUBLIC_URL + 'models/object_room.glb')
     const wall_room = useLoader(GLTFLoader, process.env.PUBLIC_URL + 'models/wall_room.glb')
     const floor = useLoader(GLTFLoader, process.env.PUBLIC_URL + 'models/floor_room.glb')
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    const materialWall = new MeshStandardMaterial({ ...typh });
+    const materialWall = new MeshStandardMaterial({ color: "#E7CBA9" });
 
     useEffect(() => {
         if (!room) return;
@@ -76,9 +50,6 @@ function Room() {
         });
 
     }, [room, wall_room, floor, materialWall]);
-
-    // const [hovered, setHover] = useState(false)
-    // const [active, setActive] = useState(false)
 
     return (
         <div className='w-full h-full relative'>
@@ -112,7 +83,6 @@ function Room() {
                 </Suspense>
 
                 <ambientLight intensity={0.5} />
-                <axesHelper args={[100]} />
                 <LightWithHelper />
             </Canvas>
         </div>

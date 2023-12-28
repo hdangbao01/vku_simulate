@@ -11,6 +11,7 @@ function AppProvider({ children }) {
     const [selectedRoomId, setSelectedRoomId] = useState('')
     const [allRoom, setAllRoom] = useState('')
     const [openModal, setOpenModal] = useState(false)
+    // const [headerActive, setHeaderActive] = useState('Trang chủ')
 
     useEffect(() => {
         const colRef = collection(db, "rooms")
@@ -56,8 +57,18 @@ function AppProvider({ children }) {
 
     const members = useFirestore('users', userCond)
 
+    const dataUserCond = useMemo(() => {
+        return {
+            fieldName: 'uid',
+            operator: '==',
+            compareValue: data.uid
+        }
+    }, [data.uid])
+
+    const dataUser = useFirestore('users', dataUserCond)
+
     return (
-        <AppContext.Provider value={{ rooms, selectedRoomId, setSelectedRoomId, selectedRoom, openModal, setOpenModal, members, allRoom }}>
+        <AppContext.Provider value={{ rooms, selectedRoomId, setSelectedRoomId, selectedRoom, openModal, setOpenModal, members, allRoom, dataUser }}>
             {children}
         </AppContext.Provider>
     );

@@ -7,6 +7,8 @@ module.exports = {
     extend: {
       fontFamily: {
         helvetica: ['Helvetica Neue', 'sans-serif'],
+        sharp: ['Sharp Sans', 'sans-serif'],        
+        instrument: ['Instrument Sans', 'sans-serif'],        
       },
       colors: {
         primary: '#222',
@@ -18,7 +20,7 @@ module.exports = {
         border: '#444',
       },
       width: {
-        'header': '590px',
+        'header': '598px',
         '40': '40%',
       },
       minWidth: {

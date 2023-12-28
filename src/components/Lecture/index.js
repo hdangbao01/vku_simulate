@@ -2,8 +2,9 @@ import { useFrame, useLoader } from '@react-three/fiber'
 import { useRef } from 'react';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 
-const Lecture = ({ rotation }) => {
-    const gltf = useLoader(GLTFLoader, process.env.PUBLIC_URL + 'models/vku_object.glb')
+const Lecture = ({ rotation, onClick }) => {
+    // const gltf = useLoader(GLTFLoader, process.env.PUBLIC_URL + 'models/vku_object.glb')
+    const gltf = useLoader(GLTFLoader, process.env.PUBLIC_URL + 'models/lecture_name.glb')
 
     gltf.scene.traverse((child) => {
         if (child.isMesh) {
@@ -20,7 +21,7 @@ const Lecture = ({ rotation }) => {
     });
 
     return (
-        <mesh ref={sphereRef} castShadow>
+        <mesh ref={sphereRef} castShadow onClick={(e) => onClick(e)}>
             <primitive object={gltf.scene} />
         </mesh>
     )

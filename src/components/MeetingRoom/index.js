@@ -3,7 +3,7 @@ import { AuthContext } from "~/Context/AuthProvider";
 import Modal from "../Modal";
 import { signOut } from 'firebase/auth'
 import { auth, db } from "~/firebase/config";
-import { Fragment, Suspense, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, Suspense, memo, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { addDoc, collection, doc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { RiDropdownList } from "react-icons/ri";
 import { IoClose, IoSend } from "react-icons/io5";
@@ -13,7 +13,7 @@ import { TfiControlBackward } from "react-icons/tfi";
 import useFirestore from "~/hook/useFirestore";
 import { formatRelative } from "date-fns";
 import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
-import { DirectionalLightHelper, MeshStandardMaterial, Vector3, VideoTexture } from "three";
+import { MeshStandardMaterial, Vector3, VideoTexture } from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { Environment, OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import Load from "../Load";
@@ -21,20 +21,6 @@ import { Dialog, Transition } from "@headlessui/react";
 
 function LightWithHelper() {
     const lightRef = useRef();
-    const { scene } = useThree();
-
-    useEffect(() => {
-        if (lightRef.current) {
-            const helper = new DirectionalLightHelper(lightRef.current, 1);
-            scene.add(helper);
-
-            return () => {
-                if (helper) {
-                    scene.remove(helper);
-                }
-            };
-        }
-    }, [scene]);
 
     return (
         <>
@@ -45,7 +31,7 @@ function LightWithHelper() {
 
 function MeetingRoom() {
     const { data } = useContext(AuthContext)
-    const { selectedRoomId, setSelectedRoomId, selectedRoom, setOpenModal, members, allRoom } = useContext(AppContext)
+    const { selectedRoomId, setSelectedRoomId, selectedRoom, setOpenModal, members, allRoom, dataUser } = useContext(AppContext)
     const [input, setInput] = useState('')
     const [openSelectChair, setOpenSelectChair] = useState(false)
     const [cameraPOV, setCameraPOV] = useState([0, 0, 4])
@@ -81,7 +67,6 @@ function MeetingRoom() {
         const selectRoom = allRoom.find(room => room.id === roomId)
 
         if (!selectRoom.members.includes(data.uid)) {
-            console.log('join');
             const docRef = doc(db, "rooms", roomId);
 
             await setDoc(docRef, { ...selectRoom, members: [...selectRoom.members, data.uid] });
@@ -207,8 +192,11 @@ function MeetingRoom() {
         </mesh>
     }
 
+    // const { camera } = useThree();
+
     const handlSelectChair = () => {
         setCameraPOV(selectedChair)
+        // camera.position.lerp(selectedChair, 0.25);
         setOrbitCamera([0.15, 3.25, -6.04])
         setOpenSelectChair(false)
         setOutChair(true)
@@ -270,77 +258,91 @@ function MeetingRoom() {
         </mesh>
     }
 
-    const PlaneVideo = () => {
-        // const texture = useVideoTexture(process.env.PUBLIC_URL + 'videos/sunflower.3gp')
+    // const link = process.env.PUBLIC_URL + 'videos/mv.mp4'
+    // const [link, setLink] = useState(process.env.PUBLIC_URL + 'videos/mv.mp4')
 
-        let model = {}
-        model.video = document.createElement("video")
-        model.video.muted = false
-        model.video.loop = true
-        model.video.controls = true
-        model.video.playsInline = true
-        model.video.autoplay = false
-        model.video.src = process.env.PUBLIC_URL + 'videos/mv.mp4'
+    const PlaneVideo = memo(({ url }) => {
+        // const texture = useVideoTexture(process .env.PUBLIC_URL + 'videos/sunflower.3gp')
 
-        const handleClickScreen = () => {
+        const model = useMemo(() => {
+            const video = document.createElement("video")
+            video.muted = false
+            video.loop = true
+            video.controls = true
+            video.playsInline = true
+            video.autoplay = false
+            video.src = url
+            return { video }
+        }, [url])
 
+        // let model = {}
+        // model.video = document.createElement("video")
+        // model.video.muted = false
+        // model.video.loop = true
+        // model.video.controls = true
+        // model.video.playsInline = true
+        // model.video.autoplay = false
+        // model.video.src = url
+        // process.env.PUBLIC_URL + 'videos/mv.mp4'
+
+        const handleClickScreen = useCallback(() => {
             if (model.video.paused) {
                 model.video.play()
             } else {
                 model.video.pause()
             }
-        }
+        }, [model])
 
         const texture = new VideoTexture(model.video)
 
-        return (
-            <Suspense fallback={null}>
-                <mesh position={[0.15, 3.25, -6.04]} onClick={handleClickScreen}>
-                    <planeGeometry args={[3.3, 2.5]} />
-                    <meshBasicMaterial map={texture} toneMapped={false} />
-                </mesh>
-            </Suspense>
-        )
-    }
+        return <Suspense fallback={null}>
+            <mesh position={[0.15, 3.25, -6.04]} onClick={handleClickScreen}>
+                <planeGeometry args={[3.3, 2.5]} />
+                <meshBasicMaterial map={texture} toneMapped={false} />
+            </mesh>
+        </Suspense>
+    })
 
     return <div className="w-screen h-screen">
         <div className="fixed w-1/5 bg-white right-0 top-0 bottom-0">
             <div className="h-10 flex justify-between mx-4 my-4">
                 <div className="flex justify-center items-center">
                     <img className="w-10 h-10 rounded-full object-cover" src={data?.photoURL} alt="Avatar" />
-                    <p className="ml-2">{data?.displayName}</p>
+                    <p className="ml-2 font-medium">{data?.displayName}</p>
                 </div>
                 <button onClick={handleSignOut} className="flex justify-center items-center text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:bg-blue-700 font-medium rounded-xl text-sm px-5 py-2.5 text-center">
                     Đăng xuất
                 </button>
             </div>
             <div className="border-t border-b-gray-950 border-solid px-4 py-4">
-                <div className="flex items-center">
-                    <button onClick={() => setOpenModal(true)} className="mr-2 flex justify-center items-center text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:bg-blue-700 font-medium rounded-lg text-sm p-2 text-center">
-                        <FaPlus className="text-base" />
-                    </button>
-                    <div className="cursor-pointer hover:text-blue-600" onClick={() => setOpenModal(true)}>Tạo phòng</div>
-                </div>
-                <div className="flex items-center pt-4 pb-2">
+                {dataUser[0]?.role === "TEACHER" &&
+                    <div className="flex items-center pb-4">
+                        <button onClick={() => setOpenModal(true)} className="mr-2 flex justify-center items-center text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:bg-blue-700 font-medium rounded-lg text-sm p-2 text-center">
+                            <FaPlus className="text-base" />
+                        </button>
+                        <div className="cursor-pointer hover:text-blue-600 font-medium" onClick={() => setOpenModal(true)}>Tạo phòng</div>
+                    </div>
+                }
+                <div className="flex items-center pb-2">
                     <button className="mr-2 flex justify-center items-center text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:bg-blue-700 font-medium rounded-lg text-sm p-2 text-center">
                         <RiDropdownList className="text-base" />
                     </button>
-                    <div>Danh sách phòng</div>
+                    <div className="font-medium">Danh sách phòng</div>
                 </div>
-                <ul className="font-light">
+                <ul className="font-medium">
                     {allRoom && allRoom.map(room => <li key={room.id}
                         onClick={() => handleSelectedRoom(room.id)}
-                        className={`flex items-center ml-6 py-1 hover:text-blue-600 hover:font-normal cursor-pointer ${room?.id === selectedRoomId && `text-blue-600 font-normal`}`}
+                        className={`flex items-center ml-6 py-1 hover:text-blue-600 hover:font-medium cursor-pointer ${room?.id === selectedRoomId && `text-blue-600 font-medium`}`}
                     >
-                        <BsDot /> {room?.name} {room?.id === selectedRoomId && <TfiControlBackward className="ml-1 font-semibold" />}
+                        <BsDot /> Phòng: {room?.name} {room?.id === selectedRoomId && <TfiControlBackward className="ml-1 font-semibold" />}
                     </li>)}
                 </ul>
             </div>
         </div>
         <div className="fixed w-4/5 h-screen left-0 top-0 bottom-0">
             <div className="z-10 fixed w-96 h-96 left-6 bottom-6 bg-white rounded-3xl text-black">
-                <p className="mx-5 my-3">Phòng {selectedRoom?.name}</p>
-                <div className="flex items-center border-t border-b-gray-950 border-solid px-4 py-4">
+                <p className="mx-5 my-3 font-medium">Phòng {selectedRoom?.name}</p>
+                <div className="flex items-center border-t border-b-gray-950 border-solid px-4 py-4 font-medium">
                     Thành viên: {members.map(member => <img key={member?.uid} className="w-9 h-9 rounded-full object-cover ml-2" src={member?.photoURL} alt="Avatar" />)}
                 </div>
                 <div className="overflow-auto h-52 flex flex-col">
@@ -348,7 +350,7 @@ function MeetingRoom() {
                         <img className="w-9 h-9 rounded-full object-cover mx-2" src={mess?.photoURL} alt="Avatar" />
                         <div>
                             <div className="flex items-center">
-                                <p className="mr-2">{mess?.displayName}</p>
+                                <p className="mr-2 font-medium">{mess?.displayName}</p>
                                 <p className="font-light">{formatDate(mess?.createdAt?.seconds)}</p>
                             </div>
                             <p className="font-light">{mess?.text}</p>
@@ -391,15 +393,15 @@ function MeetingRoom() {
                     <Chair />
                     <Wall />
                     <Floor />
-                    <PlaneVideo />
+                    <PlaneVideo url={process.env.PUBLIC_URL + 'videos/mv.mp4'} />
                 </Suspense>
                 <ambientLight intensity={0.5} />
-                <axesHelper args={[100]} />
+                {/* <axesHelper args={[100]} /> */}
                 <LightWithHelper />
             </Canvas>
             {!selectedRoomId &&
                 <div className="z-20 absolute right-0 left-0 top-0 bottom-0 bg-black opacity-60">
-                    <div className="flex flex-col items-center justify-center h-full text-white">
+                    <div className="flex flex-col items-center justify-center h-full text-white font-semibold text-xl">
                         Vui lòng chọn 1 phòng để vào
                     </div>
                 </div>
@@ -434,7 +436,7 @@ function MeetingRoom() {
                             <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
                                 <div className="bg-white px-4 pb-4 pt-4">
                                     <div className="flex items-start justify-between text-lg">
-                                        <div>Ngồi vào nghế</div>
+                                        <div className="font-medium">Ngồi vào nghế</div>
                                         <button onClick={() => setOpenSelectChair(false)}><IoClose /></button>
                                     </div>
                                 </div>

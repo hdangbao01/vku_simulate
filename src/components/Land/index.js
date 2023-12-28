@@ -31,7 +31,7 @@ const Land = ({ rotation }) => {
 
 
     return (
-        <mesh ref={sphereRef} onClick={(e) => console.log(e.target)} receiveShadow>
+        <mesh ref={sphereRef} receiveShadow>
             <primitive object={gltf.scene} />
         </mesh>
     )

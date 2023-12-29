@@ -18,6 +18,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { Environment, OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import Load from "../Load";
 import { Dialog, Transition } from "@headlessui/react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 function LightWithHelper() {
     const lightRef = useRef();
@@ -39,6 +40,23 @@ function MeetingRoom() {
     const [selectedChair, setSelectedChair] = useState([])
     const [outChair, setOutChair] = useState(false)
     const cancelButtonRef = useRef(null)
+    const location = useLocation()
+    const navigate = useNavigate();
+
+    // console.log(database._repoInternal);
+    // const handleRef = () => {
+    //     set(ref(database, 'meets'), {
+    //         audio: true,
+    //         video: false,
+    //         screen: false,
+    //     })
+    //         .then(() => {
+    //             console.log("Success");
+    //         })
+    //         .catch((error) => {
+    //             console.log("Failed");
+    //         });
+    // }
 
     // handle Website
     const handleSignOut = async () => {
@@ -85,6 +103,7 @@ function MeetingRoom() {
                 await setDoc(docRef, { ...selectRoomOut, members: [...arr] });
             }
         }
+        navigate('/meeting')
         setSelectedRoomId(null)
     }
 
@@ -192,8 +211,6 @@ function MeetingRoom() {
         </mesh>
     }
 
-    // const { camera } = useThree();
-
     const handlSelectChair = () => {
         setCameraPOV(selectedChair)
         // camera.position.lerp(selectedChair, 0.25);
@@ -293,7 +310,11 @@ function MeetingRoom() {
             }
         }, [model])
 
-        const texture = new VideoTexture(model.video)
+        const texture = useMemo(() => {
+            const a = new VideoTexture(model.video)
+            return a
+        }, [model])
+
 
         return <Suspense fallback={null}>
             <mesh position={[0.15, 3.25, -6.04]} onClick={handleClickScreen}>
@@ -330,12 +351,13 @@ function MeetingRoom() {
                     <div className="font-medium">Danh sách phòng</div>
                 </div>
                 <ul className="font-medium">
-                    {allRoom && allRoom.map(room => <li key={room.id}
-                        onClick={() => handleSelectedRoom(room.id)}
-                        className={`flex items-center ml-6 py-1 hover:text-blue-600 hover:font-medium cursor-pointer ${room?.id === selectedRoomId && `text-blue-600 font-medium`}`}
-                    >
-                        <BsDot /> Phòng: {room?.name} {room?.id === selectedRoomId && <TfiControlBackward className="ml-1 font-semibold" />}
-                    </li>)}
+                    {allRoom && allRoom.map(room => <Link key={room.id} to={`/meeting?room=${room.id}`}>
+                        <li
+                            onClick={() => handleSelectedRoom(room.id)}
+                            className={`flex items-center ml-6 py-1 hover:text-blue-600 hover:font-medium cursor-pointer ${room?.id === selectedRoomId && `text-blue-600 font-medium`}`}
+                        >
+                            <BsDot /> Phòng: {room?.name} {room?.id === selectedRoomId && <TfiControlBackward className="ml-1 font-semibold" />}
+                        </li></Link>)}
                 </ul>
             </div>
         </div>
@@ -343,7 +365,7 @@ function MeetingRoom() {
             <div className="z-10 fixed w-96 h-96 left-6 bottom-6 bg-white rounded-3xl text-black">
                 <p className="mx-5 my-3 font-medium">Phòng {selectedRoom?.name}</p>
                 <div className="flex items-center border-t border-b-gray-950 border-solid px-4 py-4 font-medium">
-                    Thành viên: {members.map(member => <img key={member?.uid} className="w-9 h-9 rounded-full object-cover ml-2" src={member?.photoURL} alt="Avatar" />)}
+                    Thành viên: {!!location.search === true && members.map(member => <img key={member?.uid} className="w-9 h-9 rounded-full object-cover ml-2" src={member?.photoURL} alt="Avatar" />)}
                 </div>
                 <div className="overflow-auto h-52 flex flex-col">
                     {allMess.map(mess => <div ref={refMess} key={mess?.id} className="flex items-center mb-2">

@@ -2,7 +2,7 @@ import { OrbitControls, PerspectiveCamera, Environment } from '@react-three/drei
 import { Suspense, useEffect, useState } from 'react'
 import Land from '../Land'
 import Lecture from '../Lecture'
-import Car from '../Car'
+// import Car from '../Car'
 
 const SceneContainer = ({ posPerspectiveCamera, autoRotate }) => {
     const [thirdPerson, setThirdPerson] = useState(false);
@@ -38,7 +38,7 @@ const SceneContainer = ({ posPerspectiveCamera, autoRotate }) => {
             <group position={[-70, 0, -50]}>
                 <Land />
                 <Lecture />
-                <Car thirdPerson={thirdPerson} />
+                {/* <Car thirdPerson={thirdPerson} /> */}
             </group>
         </Suspense>
     )

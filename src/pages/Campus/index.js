@@ -6,7 +6,6 @@ import { Fragment, Suspense, useEffect, useRef, useState } from 'react';
 import { IoClose } from 'react-icons/io5';
 import { AnimationMixer, Quaternion, Vector3 } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import Car from '~/components/Car';
 import Header from '~/components/Header';
 import Land from '~/components/Land';
 import Lecture from '~/components/Lecture';
@@ -374,14 +373,134 @@ function Room() {
                                 leaveFrom="opacity-100 translate-y-0 sm:scale-100"
                                 leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                             >
-                                <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                                <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8">
                                     <div className="bg-white px-4 pb-4 pt-4">
                                         <div className="flex items-start justify-between text-lg">
                                             <div className="font-medium">Thông tin</div>
                                             <button onClick={() => setOpenModal(false)}><IoClose /></button>
                                         </div>
                                     </div>
-                                    <div>{nameObject}</div>
+                                    {nameObject.includes("887") &&
+                                        <div className='m-6 flex'>
+                                            <img className='w-72 h-52 rounded-md object-cover mr-2' src='https://xdcs.cdnchinhphu.vn/446259493575335936/2023/8/22/vku-1692719013676637353630.jpg' alt='object 3D' />
+                                            <div>
+                                                <p className='font-semibold'>
+                                                    Trung tâm hành chính
+                                                </p>
+                                                <p>Thông tin: {nameObject}</p>
+                                            </div>
+                                        </div>
+                                    }
+                                    {nameObject.includes("038") &&
+                                        <div className='m-6 flex'>
+                                            <img className='w-72 h-52 rounded-md object-cover mr-2' src='https://lh5.googleusercontent.com/p/AF1QipM8_V4zD9m2JKUFXDjtKh_Adso1MxNYpz9IN9BE=s435-k-no' alt='object 3D' />
+                                            <div>
+                                                <p className='font-semibold'>
+                                                    Trung tâm sinh viên
+                                                </p>
+                                                <p>Thông tin: {nameObject}</p>
+                                            </div>
+                                        </div>
+                                    }
+                                    {nameObject.includes("1298") &&
+                                        <div className='m-6 flex'>
+                                            <img className='w-72 h-52 rounded-md object-cover mr-2' src='https://lh5.googleusercontent.com/p/AF1QipNAtTx4CzUzdBdoJBx6xK9ZsWviZeTyAmkW__cK=w203-h135-k-no' alt='object 3D' />
+                                            <div>
+                                                <p className='font-semibold'>
+                                                    Viện eSTI & Thư viện
+                                                </p>
+                                                <p>Thông tin: {nameObject}</p>
+                                            </div>
+                                        </div>
+                                    }
+                                    {nameObject.includes("082") &&
+                                        <div className='m-6 flex'>
+                                            <img className='w-72 h-52 rounded-md object-cover mr-2' src='https://lh5.googleusercontent.com/p/AF1QipPPL_oBUCsY6HP_Os33FbRbNafCru5-WyOGZ9lx=s452-k-no' alt='object 3D' />
+                                            <div>
+                                                <p className='font-semibold'>
+                                                    Giảng đường khu A
+                                                </p>
+                                                <p>Thông tin: {nameObject}</p>
+                                            </div>
+                                        </div>
+                                    }
+                                    {nameObject.includes("053") &&
+                                        <div className='m-6 flex'>
+                                            <img className='w-72 h-52 rounded-md object-cover mr-2' src='https://lh5.googleusercontent.com/p/AF1QipPPL_oBUCsY6HP_Os33FbRbNafCru5-WyOGZ9lx=s452-k-no' alt='object 3D' />
+                                            <div>
+                                                <p className='font-semibold'>
+                                                    Giảng đường khu B
+                                                </p>
+                                                <p>Thông tin: {nameObject}</p>
+                                            </div>
+                                        </div>
+                                    }
+                                    {nameObject.includes("1293") &&
+                                        <div className='m-6 flex'>
+                                            <img className='w-72 h-52 rounded-md object-cover mr-2' src='https://lh5.googleusercontent.com/p/AF1QipPPL_oBUCsY6HP_Os33FbRbNafCru5-WyOGZ9lx=s452-k-no' alt='object 3D' />
+                                            <div>
+                                                <p className='font-semibold'>
+                                                    Giảng đường khu C
+                                                </p>
+                                                <p>Thông tin: {nameObject}</p>
+                                            </div>
+                                        </div>
+                                    }
+                                    {nameObject.includes("1089") &&
+                                        <div className='m-6 flex'>
+                                            <img className='w-72 h-52 rounded-md object-cover mr-2' src='https://lh5.googleusercontent.com/p/AF1QipPPL_oBUCsY6HP_Os33FbRbNafCru5-WyOGZ9lx=s452-k-no' alt='object 3D' />
+                                            <div>
+                                                <p className='font-semibold'>
+                                                    Phòng Khoa khu D
+                                                </p>
+                                                <p>Thông tin: {nameObject}</p>
+                                            </div>
+                                        </div>
+                                    }
+                                    {nameObject.includes("1203") &&
+                                        <div className='m-6 flex'>
+                                            <img className='w-72 h-52 rounded-md object-cover mr-2' src='https://lh5.googleusercontent.com/p/AF1QipPPL_oBUCsY6HP_Os33FbRbNafCru5-WyOGZ9lx=s452-k-no' alt='object 3D' />
+                                            <div>
+                                                <p className='font-semibold'>
+                                                    Trung tâm, Văn phòng, Giàng đường khu E
+                                                </p>
+                                                <p>Thông tin: {nameObject}</p>
+                                            </div>
+                                        </div>
+                                    }
+                                    {nameObject.includes("Cylinder") &&
+                                        <div className='m-6 flex'>
+                                            <img className='w-72 h-52 rounded-md object-cover mr-2' src='https://lh5.googleusercontent.com/p/AF1QipNhBLUk9BnkgvTTHbLUCp1784X-yYclF6zMTdB4=s508-k-no' alt='object 3D' />
+                                            <div>
+                                                <p className='font-semibold'>
+                                                    Hội trường tròn
+                                                </p>
+                                                <p>Thông tin: {nameObject}</p>
+                                            </div>
+                                        </div>
+                                    }
+                                    {nameObject.includes("Circle") &&
+                                        <div className='m-6 flex'>
+                                            <img className='w-72 h-52 rounded-md object-cover mr-2' src='https://lh5.googleusercontent.com/p/AF1QipPfwOYotPeycLeLjOECs5Dp8RQDXw4moytGFCi1=s438-k-no' alt='object 3D' />
+                                            <div>
+                                                <p className='font-semibold'>
+                                                    Đài phun nước
+                                                </p>
+                                                <p>Thông tin: {nameObject}</p>
+                                            </div>
+                                        </div>
+                                    }
+                                    {nameObject.includes("039") &&
+                                        <div className='m-6 flex'>
+                                            <img className='w-72 h-52 rounded-md object-cover mr-2' src='https://lh5.googleusercontent.com/p/AF1QipPPL_oBUCsY6HP_Os33FbRbNafCru5-WyOGZ9lx=s452-k-no' alt='object 3D' />
+                                            <div>
+                                                <p className='font-semibold'>
+                                                    Khu Ký túc xá
+                                                </p>
+                                                <p>Thông tin: {nameObject}</p>
+                                            </div>
+                                        </div>
+                                    }
                                     <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                                         <button
                                             type="button"

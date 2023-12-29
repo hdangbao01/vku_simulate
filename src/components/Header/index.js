@@ -1,9 +1,9 @@
 /* eslint-disable jsx-a11y/alt-text */
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import NavItem from '~/components/NavItem'
 
 const items = [
-    { label: 'Trang chủ', link: '/', active: true },
+    { label: 'Trang chủ', link: '/' },
     {
         label: 'Khám phá',
         drops: [
@@ -19,20 +19,21 @@ const items = [
                 name: "Phòng Cinema",
                 link: './cinema'
             }
-        ],
-        active: true
+        ]
     },
-    { label: 'Thiết kế', link: '/design', active: true },
-    { label: 'Phòng học', link: '/meeting', active: true }
+    { label: 'Thiết kế', link: '/design' },
+    { label: 'Phòng học', link: '/meeting' }
 ]
 
-const NavItemContainer = () => {
+const NavItemContainer = ({ location }) => {
     return <>
-        {items.map((item, i) => <NavItem item={item} key={item.label} />)}
+        {items.map((item, i) => <NavItem item={item} key={item.label} location={location} />)}
     </>
 }
 
 const Header = () => {
+    const location = useLocation()
+
     return (
         <div className='w-header z-10 shadow-bx fixed top-6 left-2/4 -translate-x-2/4 flex h-16 bg-white rounded-full py-3 px-8 items-center text-lg font-semibold'>
             <div className='h-full'>
@@ -41,7 +42,7 @@ const Header = () => {
                 </Link>
             </div>
             <ul className='list-none flex'>
-                <NavItemContainer />
+                <NavItemContainer location={location} />
             </ul>
         </div>
     )

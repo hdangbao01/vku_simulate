@@ -1,4 +1,4 @@
-import { auth, dt } from "~/firebase/config";
+import { auth } from "~/firebase/config";
 import { onAuthStateChanged } from 'firebase/auth'
 import { useNavigate } from 'react-router-dom'
 import { createContext, useEffect, useState } from "react";
@@ -27,8 +27,6 @@ function AuthProvider({ children }) {
 
         return () => unsub()
     }, [navigate])
-
-    console.log(dt);
 
     return (
         <AuthContext.Provider value={{ data }}>

@@ -9,8 +9,10 @@ import { folder, useControls, } from "leva";
 import { useLeva } from "~/hook/useLeva";
 import { Dialog, Transition } from "@headlessui/react";
 import { IoClose } from "react-icons/io5";
-import { addDoc, collection, doc, getDoc } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, onSnapshot, serverTimestamp } from "firebase/firestore";
 import { db } from "~/firebase/config";
+import { formatRelative } from "date-fns";
+import { BsDot } from "react-icons/bs";
 
 function LightWithHelper() {
     const lightRef = useRef();
@@ -41,10 +43,13 @@ function Design() {
     const [tableObjs, setTableObjs] = useState([]);
     const [boardObjs, setBoardObjs] = useState([]);
     const [wallObjs, setWallObjs] = useState('');
+    const [listRoom, setListRoom] = useState([])
     // const [wallObjs, setWallObjs] = useState('E7CBA9');
     // const [design, setDesign] = useState([]);
     const [openModal, setOpenModal] = useState(false)
     const cancelButtonRef = useRef(null)
+
+    const urf = window.location.href.split("=")[1]
 
     const room = useLoader(GLTFLoader, process.env.PUBLIC_URL + 'models/empty_room.glb')
     const wall_room = useLoader(GLTFLoader, process.env.PUBLIC_URL + 'models/wall_room.glb')
@@ -96,44 +101,60 @@ function Design() {
     }, [room, floor, board, chair, table]);
 
     useEffect(() => {
-        getDoc(doc(db, "objects", "L72Cpc7ORX93uQu1kHDL")).then(docSnap => {
-            if (docSnap.exists()) {
-                let aC = []
-                let aT = []
+        if (urf) {
+            getDoc(doc(db, "objects", urf)).then(docSnap => {
+                if (docSnap.exists()) {
+                    let aC = []
+                    let aT = []
 
-                const dataJB = JSON.parse(docSnap.data().board)
-                const dataJC = JSON.parse(docSnap.data().chairs)
-                const dataJT = JSON.parse(docSnap.data().tables)
-                const dataJW = docSnap.data().color
+                    const dataJB = JSON.parse(docSnap.data().board)
+                    const dataJC = JSON.parse(docSnap.data().chairs)
+                    const dataJT = JSON.parse(docSnap.data().tables)
+                    const dataJW = docSnap.data().color
 
-                for (let index = 0; index < dataJC.length; index++) {
-                    const dialScene = chair.scene.clone(true);
-                    const dialProps = {
-                        id: index + 1,
-                        object: dialScene,
-                        position: { x: dataJC[index].position.x, y: dataJC[index].position.z }
+                    for (let index = 0; index < dataJC.length; index++) {
+                        const dialScene = chair.scene.clone(true);
+                        const dialProps = {
+                            id: index + 1,
+                            object: dialScene,
+                            position: { x: dataJC[index]?.position.x, y: dataJC[index]?.position.z }
+                        }
+                        aC = ([...aC, dialProps])
                     }
-                    aC = ([...aC, dialProps])
-                }
 
-                for (let index = 0; index < dataJT.length; index++) {
-                    const dialScene = table.scene.clone(true);
-                    const dialProps = {
-                        id: index + 1,
-                        object: dialScene,
-                        position: { x: dataJT[index].position.x, y: dataJT[index].position.z }
+                    for (let index = 0; index < dataJT.length; index++) {
+                        const dialScene = table.scene.clone(true);
+                        const dialProps = {
+                            id: index + 1,
+                            object: dialScene,
+                            position: { x: dataJT[index]?.position.x, y: dataJT[index]?.position.z }
+                        }
+                        aT = ([...aT, dialProps])
                     }
-                    aT = ([...aT, dialProps])
-                }
 
-                setChairObjs(aC)
-                setTableObjs(aT)
-                setBoardObjs(dataJB)
-                setWallObjs(dataJW)
-            } else {
-                console.log("No such document!");
-            }
+                    setChairObjs(aC)
+                    setTableObjs(aT)
+                    setBoardObjs(dataJB)
+                    setWallObjs(dataJW)
+                } else {
+                    console.log("No such document!");
+                }
+            })
+        }
+    }, [urf])
+
+    useEffect(() => {
+        const colRef = collection(db, "objects")
+
+        const unsubscribe = onSnapshot(colRef, (snapshot) => {
+            const data = snapshot.docs.map(doc => ({
+                ...doc.data(),
+                id: doc.id
+            }))
+            setListRoom(data)
         })
+
+        return unsubscribe
     }, [])
 
     const handleAddTable = () => {
@@ -157,6 +178,10 @@ function Design() {
 
         setChairObjs([...chairObjs, dialProps]);
     };
+
+    const newDesign = () => {
+        window.location.href = '/design'
+    }
 
     let arrChair = []
     const Chair = ({ dialProps }) => {
@@ -282,16 +307,29 @@ function Design() {
         });
         try {
             const docRef = await addDoc(collection(db, "objects"), {
-                color: arrWall,
+                color: arrWall ? arrWall : 'E7CBA9',
                 board: newDataBoard,
                 chairs: newDataChair,
-                tables: newDataTable
+                tables: newDataTable,
+                createdAt: serverTimestamp()
             });
             console.log("Document written with ID: ", docRef);
             alert("Lưu thành công!")
         } catch (e) {
             console.error("Error adding document: ", e);
         }
+    }
+
+    const formatDate = (seconds) => {
+        let formattedDate = ''
+
+        if (seconds) {
+            formattedDate = formatRelative(new Date(seconds * 1000), new Date())
+
+            formattedDate = formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1)
+        }
+
+        return formattedDate
     }
 
     return (
@@ -310,6 +348,8 @@ function Design() {
                         maxPolarAngle={Math.PI * 0.5}
                         minPolarAngle={Math.PI * 0.5}
                         enableZoom={true}
+                        maxZoom={2}
+                        minZoom={1}
                     />
                     <mesh>
                         <primitive object={room.scene} />
@@ -319,7 +359,7 @@ function Design() {
                         <primitive object={wall_room.scene} />
                         <meshBasicMaterial />
                     </mesh> */}
-                    {wallObjs && <Wall wallObjs={wallObjs} />}
+                    {urf ? wallObjs && <Wall wallObjs={wallObjs} /> : <Wall wallObjs='E7CBA9' />}
                     <mesh>
                         <primitive object={floor.scene} />
                         <meshBasicMaterial />
@@ -341,15 +381,18 @@ function Design() {
                 <LightWithHelper />
             </Canvas>
             <div className='flex flex-col fixed top-6 left-6'>
-                <button onClick={handleAddTable} className='text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:bg-blue-700 font-medium rounded-xl text-base px-5 py-2.5 text-center shadow-bx mb-4'>Thêm bàn mới</button>
-                <button onClick={handleAddChair} className='text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:bg-blue-700 font-medium rounded-xl text-base px-5 py-2.5 text-center shadow-bx'>Thêm ghế mới</button>
+                {urf && <button onClick={newDesign} className='text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:bg-blue-700 font-medium rounded-xl text-base px-5 py-2.5 text-center shadow-bx mb-4'>
+                    Thiết kế mới
+                </button>}
+                {!urf && <button onClick={handleAddTable} className='text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:bg-blue-700 font-medium rounded-xl text-base px-5 py-2.5 text-center shadow-bx mb-4'>Thêm bàn mới</button>}
+                {!urf && <button onClick={handleAddChair} className='text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:bg-blue-700 font-medium rounded-xl text-base px-5 py-2.5 text-center shadow-bx'>Thêm ghế mới</button>}
             </div>
             <div className='flex fixed bottom-6 left-6'>
                 <button onClick={() => {
                     setOpenModal(true)
                 }
                 } className='text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:bg-blue-700 font-medium rounded-xl text-base px-5 py-2.5 text-center shadow-bx mr-4'>Danh sách thiết kế</button>
-                <button onClick={handleSave} className='text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:bg-blue-700 font-medium rounded-xl text-base px-5 py-2.5 text-center shadow-bx'>Lưu thiết kế</button>
+                {!urf && <button onClick={handleSave} className='text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:bg-blue-700 font-medium rounded-xl text-base px-5 py-2.5 text-center shadow-bx'>Lưu thiết kế</button>}
             </div>
             <Transition.Root show={openModal} as={Fragment}>
                 <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={setOpenModal}>
@@ -376,11 +419,22 @@ function Design() {
                                 leaveFrom="opacity-100 translate-y-0 sm:scale-100"
                                 leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                             >
-                                <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-3xl">
+                                <Dialog.Panel className="flex flex-col justify-between relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-3xl h-96">
                                     <div className="bg-white px-4 pb-4 pt-4">
                                         <div className="flex items-start justify-between text-lg">
                                             <div className="font-medium">Tất cả phòng thiết kế</div>
                                             <button onClick={() => setOpenModal(false)}><IoClose /></button>
+                                        </div>
+                                        <div className="mt-4 h-60 overflow-y-scroll">
+                                            {listRoom.map((iRoom, i) => {
+                                                return <div key={iRoom.id} className="ml-6 mb-4">
+                                                    <p className="flex items-center">
+                                                        <BsDot /> Thiết kế: <a className="mx-2" href={`/design?room=${iRoom.id}`}>
+                                                            {iRoom.id}
+                                                        </a> - {formatDate(iRoom?.createdAt?.seconds)}
+                                                    </p>
+                                                </div>
+                                            })}
                                         </div>
                                     </div>
                                     <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">

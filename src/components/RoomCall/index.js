@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useSocket } from "~/Context/SocketProvider";
 import ReactPlayer from "react-player";
+import peer from "~/service/peer";
 
 function RoomCall() {
     const socket = useSocket()
@@ -18,22 +19,35 @@ function RoomCall() {
             video: true
         })
 
+        const offer = await peer.getOffer()
+        socket.emit('user:call', { to: remoteSocketId, offer })
         setMyStream(stream)
+    }, [remoteSocketId, socket])
+
+    const handleIncommingCall = useCallback(({ from, offer }) => {
+        console.log(`Incomming Call`, from, offer);
     }, [])
 
     useEffect(() => {
         socket.on('user:joined', handleUserJoined)
+        socket.on('incomming:call', handleIncommingCall)
 
         return () => {
             socket.off('user:joined', handleUserJoined)
+            socket.off('incomming:call', handleIncommingCall)
         }
-    }, [socket, handleUserJoined])
+    }, [socket, handleUserJoined, handleIncommingCall])
 
     return <div>
         <h1>Room Call</h1>
         <h1>{remoteSocketId ? 'Connected' : 'Noone'}</h1>
         {remoteSocketId && <button className="border-2 border-solid border-black py-2 px-4" onClick={handleCall}>Call</button>}
-        {myStream && <ReactPlayer height={'300px'} width={'500px'} url={myStream} />}
+        {myStream &&
+            <>
+                <h1 className="font-semibold">Stream</h1>
+                <ReactPlayer playing muted height={'300px'} width={'500px'} url={myStream} />
+            </>
+        }
     </div>;
 }
 

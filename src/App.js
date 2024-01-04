@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, BrowserRouter } from 'react-rou
 import { publicRoutes } from '~/routes';
 import AuthProvider from './Context/AuthProvider';
 import AppProvider from './Context/AppProvider';
+import { SocketProvider } from './Context/SocketProvider';
 import { Suspense } from 'react';
 
 function App() {
@@ -19,7 +20,11 @@ function App() {
                     <Page />
                   </AppProvider>
                 </AuthProvider>
-                : <Page />
+                : route.socket ?
+                  <SocketProvider>
+                    <Page />
+                  </SocketProvider>
+                  : <Page />
             } />
           })}
         </Routes>

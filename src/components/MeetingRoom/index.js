@@ -409,7 +409,7 @@ function MeetingRoom() {
                         // target={[0.15, 3.25, -6.04]}
                         maxPolarAngle={Math.PI * 0.5}
                         minPolarAngle={Math.PI * 0.5}
-                        enableZoom={false}
+                        enableZoom={true}
                     />
                     <Room />
                     <Chair />

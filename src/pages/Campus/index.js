@@ -381,123 +381,126 @@ function Room() {
                                         </div>
                                     </div>
                                     {nameObject.includes("887") &&
-                                        <div className='m-6 flex'>
+                                        <div className='m-6 flex w-header'>
                                             <img className='w-72 h-52 rounded-md object-cover mr-2' src='https://xdcs.cdnchinhphu.vn/446259493575335936/2023/8/22/vku-1692719013676637353630.jpg' alt='object 3D' />
                                             <div>
                                                 <p className='font-semibold'>
                                                     Trung tâm hành chính
                                                 </p>
-                                                <p>Thông tin: {nameObject}</p>
+                                                <p>Thông tin: </p>
                                             </div>
                                         </div>
                                     }
                                     {nameObject.includes("038") &&
-                                        <div className='m-6 flex'>
-                                            <img className='w-72 h-52 rounded-md object-cover mr-2' src='https://lh5.googleusercontent.com/p/AF1QipM8_V4zD9m2JKUFXDjtKh_Adso1MxNYpz9IN9BE=s435-k-no' alt='object 3D' />
+                                        <div className='m-6 flex w-header'>
+                                            <img className='w-72 h-52 rounded-md object-cover mr-4' src='https://lh5.googleusercontent.com/p/AF1QipM8_V4zD9m2JKUFXDjtKh_Adso1MxNYpz9IN9BE=s435-k-no' alt='object 3D' />
                                             <div>
                                                 <p className='font-semibold'>
                                                     Trung tâm sinh viên
                                                 </p>
-                                                <p>Thông tin: {nameObject}</p>
+                                                <p>Thông tin: Nơi diễn ra các hoạt động dành cho sinh viên
+                                                    (Các sự kiện, cuộc thi, tiết học thể dục)</p>
                                             </div>
                                         </div>
                                     }
                                     {nameObject.includes("1298") &&
-                                        <div className='m-6 flex'>
+                                        <div className='m-6 flex w-header'>
                                             <img className='w-72 h-52 rounded-md object-cover mr-2' src='https://lh5.googleusercontent.com/p/AF1QipNAtTx4CzUzdBdoJBx6xK9ZsWviZeTyAmkW__cK=w203-h135-k-no' alt='object 3D' />
                                             <div>
                                                 <p className='font-semibold'>
                                                     Viện eSTI & Thư viện
                                                 </p>
-                                                <p>Thông tin: {nameObject}</p>
+                                                <p>Thông tin: Thư viện và học tập, nghiên cứu dành cho sinh viên</p>
                                             </div>
                                         </div>
                                     }
                                     {nameObject.includes("082") &&
-                                        <div className='m-6 flex'>
+                                        <div className='m-6 flex w-header'>
                                             <img className='w-72 h-52 rounded-md object-cover mr-2' src='https://lh5.googleusercontent.com/p/AF1QipPPL_oBUCsY6HP_Os33FbRbNafCru5-WyOGZ9lx=s452-k-no' alt='object 3D' />
                                             <div>
                                                 <p className='font-semibold'>
                                                     Giảng đường khu A
                                                 </p>
-                                                <p>Thông tin: {nameObject}</p>
+                                                <p>Thông tin: Dãy phòng học lý thuyết và phòng thực hành</p>
+                                                <p>Gồm 3 tầng và 2 dãy phòng</p>
                                             </div>
                                         </div>
                                     }
                                     {nameObject.includes("053") &&
-                                        <div className='m-6 flex'>
+                                        <div className='m-6 flex w-header'>
                                             <img className='w-72 h-52 rounded-md object-cover mr-2' src='https://lh5.googleusercontent.com/p/AF1QipPPL_oBUCsY6HP_Os33FbRbNafCru5-WyOGZ9lx=s452-k-no' alt='object 3D' />
                                             <div>
                                                 <p className='font-semibold'>
                                                     Giảng đường khu B
                                                 </p>
-                                                <p>Thông tin: {nameObject}</p>
+                                                <p>Thông tin: Dãy phòng học lý thuyết và phòng thực hành</p>
+                                                <p>Gồm 3 tầng và 2 dãy phòng</p>
                                             </div>
                                         </div>
                                     }
                                     {nameObject.includes("1293") &&
-                                        <div className='m-6 flex'>
+                                        <div className='m-6 flex w-header'>
                                             <img className='w-72 h-52 rounded-md object-cover mr-2' src='https://lh5.googleusercontent.com/p/AF1QipPPL_oBUCsY6HP_Os33FbRbNafCru5-WyOGZ9lx=s452-k-no' alt='object 3D' />
                                             <div>
                                                 <p className='font-semibold'>
                                                     Giảng đường khu C
                                                 </p>
-                                                <p>Thông tin: {nameObject}</p>
+                                                <p>Thông tin: Gồm 2 tầng và dãy phòng lớn</p>
                                             </div>
                                         </div>
                                     }
                                     {nameObject.includes("1089") &&
-                                        <div className='m-6 flex'>
+                                        <div className='m-6 flex w-header'>
                                             <img className='w-72 h-52 rounded-md object-cover mr-2' src='https://lh5.googleusercontent.com/p/AF1QipPPL_oBUCsY6HP_Os33FbRbNafCru5-WyOGZ9lx=s452-k-no' alt='object 3D' />
                                             <div>
                                                 <p className='font-semibold'>
                                                     Phòng Khoa khu D
                                                 </p>
-                                                <p>Thông tin: {nameObject}</p>
+                                                <p>Thông tin: Gồm 3 tầng và 2 dãy phòng</p>
                                             </div>
                                         </div>
                                     }
                                     {nameObject.includes("1203") &&
-                                        <div className='m-6 flex'>
+                                        <div className='m-6 flex w-header'>
                                             <img className='w-72 h-52 rounded-md object-cover mr-2' src='https://lh5.googleusercontent.com/p/AF1QipPPL_oBUCsY6HP_Os33FbRbNafCru5-WyOGZ9lx=s452-k-no' alt='object 3D' />
                                             <div>
                                                 <p className='font-semibold'>
                                                     Trung tâm, Văn phòng, Giàng đường khu E
                                                 </p>
-                                                <p>Thông tin: {nameObject}</p>
+                                                <p>Thông tin: Gồm 3 tầng và 2 dãy phòng</p>
                                             </div>
                                         </div>
                                     }
                                     {nameObject.includes("Cylinder") &&
-                                        <div className='m-6 flex'>
+                                        <div className='m-6 flex w-header'>
                                             <img className='w-72 h-52 rounded-md object-cover mr-2' src='https://lh5.googleusercontent.com/p/AF1QipNhBLUk9BnkgvTTHbLUCp1784X-yYclF6zMTdB4=s508-k-no' alt='object 3D' />
                                             <div>
                                                 <p className='font-semibold'>
                                                     Hội trường tròn
                                                 </p>
-                                                <p>Thông tin: {nameObject}</p>
+                                                <p>Thông tin: Nơi diễn ra các buổi ngoại khoá, Serminar</p>
                                             </div>
                                         </div>
                                     }
                                     {nameObject.includes("Circle") &&
-                                        <div className='m-6 flex'>
+                                        <div className='m-6 flex w-header'>
                                             <img className='w-72 h-52 rounded-md object-cover mr-2' src='https://lh5.googleusercontent.com/p/AF1QipPfwOYotPeycLeLjOECs5Dp8RQDXw4moytGFCi1=s438-k-no' alt='object 3D' />
                                             <div>
                                                 <p className='font-semibold'>
                                                     Đài phun nước
                                                 </p>
-                                                <p>Thông tin: {nameObject}</p>
+                                                <p>Thông tin: Nằm ở trung tâm khuôn viên trường</p>
                                             </div>
                                         </div>
                                     }
                                     {nameObject.includes("039") &&
-                                        <div className='m-6 flex'>
+                                        <div className='m-6 flex w-header'>
                                             <img className='w-72 h-52 rounded-md object-cover mr-2' src='https://lh5.googleusercontent.com/p/AF1QipPPL_oBUCsY6HP_Os33FbRbNafCru5-WyOGZ9lx=s452-k-no' alt='object 3D' />
                                             <div>
                                                 <p className='font-semibold'>
                                                     Khu Ký túc xá
                                                 </p>
-                                                <p>Thông tin: {nameObject}</p>
+                                                <p>Thông tin: Gồm 3 tầng và 1 dãy phòng</p>
                                             </div>
                                         </div>
                                     }

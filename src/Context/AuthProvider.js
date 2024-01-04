@@ -22,6 +22,7 @@ function AuthProvider({ children }) {
             } else {
                 setIsLoading(false)
                 navigate('/login?email=&password=')
+                // navigate('/login')
             }
         })
 

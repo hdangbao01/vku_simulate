@@ -1,10 +1,14 @@
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import classNames from 'classnames/bind'
 import styles from '~/components/Load/Load.module.scss'
 import { Dialog, Transition } from "@headlessui/react";
 import { IoClose } from "react-icons/io5";
 import { collection, deleteDoc, doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { db } from "~/firebase/config";
+import { FiEdit } from "react-icons/fi";
+import { RiDeleteBin6Line } from "react-icons/ri";
+import { useSocket } from "~/Context/SocketProvider";
+import { useNavigate } from "react-router-dom";
 
 const cx = classNames.bind(styles)
 
@@ -18,6 +22,33 @@ function Admin() {
     const [editUser, setEditUser] = useState({})
     const [role, setRole] = useState('')
 
+    const navigate = useNavigate()
+
+    //Call Video
+    const [email, setEmail] = useState('')
+    const [room, setRoom] = useState('')
+
+    const socket = useSocket()
+
+    const handleJoin = useCallback((e) => {
+        e.preventDefault()
+        socket.emit('room:join', { email, room })
+    }, [email, room, socket])
+
+    const handleJoinRoom = useCallback((data) => {
+        const { email, room } = data
+        navigate(`/call/${room}`)
+    }, [navigate])
+
+    useEffect(() => {
+        socket.on('room:join', handleJoinRoom)
+
+        return () => {
+            socket.off('room:join', handleJoinRoom)
+        }
+    }, [socket, handleJoinRoom])
+
+    // Admin
     useEffect(() => {
         if (!admin) {
             window.location = '/login?email=&password='
@@ -103,12 +134,27 @@ function Admin() {
                             </div>
                         </div>
 
-                        <button onClick={handleLogout} className="text-xl mb-6 bg-red-600 py-2">Đăng xuất</button>
+                        <button onClick={handleLogout} className="text-xl bg-red-600 py-2">Đăng xuất</button>
                     </div>
 
                     <div className="absolute w-4/5 right-0 overflow-x-auto">
                         {active === 0 &&
-                            <div className="text-3xl mx-4 my-4">VKU SIMULATE</div>
+                            <div className="text-3xl mx-4 my-4">
+                                <p>VKU SIMULATE</p>
+                                <form onSubmit={handleJoin}>
+                                    <label htmlFor="name">Name</label>
+                                    <input
+                                        type="text" id="name" className="text-black p-2"
+                                        value={email} onChange={e => setEmail(e.target.value)}
+                                    />
+                                    <label htmlFor="room">Room</label>
+                                    <input
+                                        type="text" id="room" className="text-black p-2"
+                                        value={room} onChange={e => setRoom(e.target.value)}
+                                    />
+                                    <button className="border-2 border-solid border-white p-2">Join</button>
+                                </form>
+                            </div>
                         }
                         {active === 1 && <>
                             <div className="text-3xl mx-4 my-4">Table User</div>
@@ -143,8 +189,8 @@ function Admin() {
                                                     {iUser?.role}
                                                 </td>
                                                 <td className="px-6 py-4">
-                                                    <p className="cursor-pointer font-medium text-blue-600 dark:text-white hover:underline" onClick={() => handleSelectEdit(iUser?.uid)}>Edit</p>
-                                                    <p className="cursor-pointer font-medium text-blue-600 dark:text-white hover:underline" onClick={() => handleDelete(iUser?.id)}>Delete</p>
+                                                    <p className="cursor-pointer font-medium text-blue-600 dark:text-white hover:underline flex items-center" onClick={() => handleSelectEdit(iUser?.uid)}>Edit<FiEdit className="ml-2" /></p>
+                                                    <p className="cursor-pointer font-medium text-blue-600 dark:text-white hover:underline flex items-center" onClick={() => handleDelete(iUser?.id)}>Delete<RiDeleteBin6Line className="ml-2" /></p>
                                                 </td>
                                             </tr>
                                         ))}

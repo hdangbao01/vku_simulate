@@ -7,11 +7,11 @@ function NavItem({ item, location }) {
     //  className={`cursor-pointer hover:text-sky-600 ml-8${active ? ' text-sky-600' : ''}`}
     >
         {drops ? <>
-            <p key={label} className={`cursor-pointer hover:text-blue-600 ml-8${location.pathname === '/campus' || location.pathname === '/room' ? ' text-blue-600' : ''}`}>
+            <p key={label} className={`cursor-pointer hover:text-blue-600 ml-8${location.pathname === '/campus' || location.pathname === '/room' || location.pathname === '/round' ? ' text-blue-600' : ''}`}>
                 {/* <p key={label} className={`cursor-pointer hover:text-blue-600 ml-8${nameActive === label ? ' text-blue-600' : ''}`}> */}
                 {label}
             </p>
-            <ul className={'top-7 absolute bg-white shadow-bx rounded-sm py-3 px-6 w-44 invisible group-hover:visible'}>
+            <ul className={'z-20 top-7 absolute bg-white shadow-bx rounded-sm py-3 px-6 w-56 invisible group-hover:visible'}>
                 {drops.map(drop => (<Link to={`/${drop.link}`} key={drop.name}><li className={'text-black cursor-pointer hover:text-blue-600'}>
                     {drop.name}
                 </li></Link>))}

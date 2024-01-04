@@ -17,7 +17,11 @@ const items = [
             },
             {
                 name: "Phòng Cinema",
-                link: './cinema'
+                link: './round'
+            },
+            {
+                name: "Trung tâm sinh viên",
+                link: './round'
             }
         ]
     },

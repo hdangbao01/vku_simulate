@@ -14,7 +14,8 @@ function Login() {
     const [user, setUser] = useState('')
     const [pass, setPass] = useState('')
 
-    const handleLogin = async () => {
+    const handleLogin = async (e) => {
+        e.preventDefault()
         signInWithPopup(auth, provider)
             .then((data) => {
                 const { user } = data
@@ -98,7 +99,7 @@ function Login() {
                                     </div>
                                     <button onClick={e => handleSubmit(e)} type="submit" className="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:bg-blue-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Đăng nhập</button>
                                     <div className="text-sm text-white text-center">or</div>
-                                    <button onClick={handleLogin} type="submit" className="flex justify-center items-center w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:bg-blue-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+                                    <button onClick={e => handleLogin(e)} type="submit" className="flex justify-center items-center w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:bg-blue-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
                                         <FcGoogle />
                                         <span className="mx-1"></span>
                                         Google

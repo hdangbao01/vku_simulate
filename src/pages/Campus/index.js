@@ -10,6 +10,7 @@ import Header from '~/components/Header';
 import Land from '~/components/Land';
 import Lecture from '~/components/Lecture';
 import Load from '~/components/Load';
+// import { Stats } from '@react-three/drei'
 
 function LightWithHelper() {
     const lightRef = useRef();
@@ -331,6 +332,7 @@ function Room() {
                 </Physics>
                 <ambientLight intensity={0.25} />
                 <LightWithHelper />
+                {/* <Stats /> */}
             </Canvas>
             <div className='w-1/4 fixed top-6 left-6 shadow-bx bg-white'>
                 <img className='w-full' src={require('~/assets/images/mapp.jpg')} alt='Map-VKU' />

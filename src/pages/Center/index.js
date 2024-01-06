@@ -1,10 +1,10 @@
 import Header from "~/components/Header";
-import { Suspense, memo, useCallback, useEffect, useMemo, useRef } from "react";
+import { Suspense, useEffect, useRef } from "react";
 import { Canvas, useLoader, useThree } from '@react-three/fiber'
 import { Environment, OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import Load from "~/components/Load";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-import { DirectionalLightHelper, VideoTexture } from "three";
+import { DirectionalLightHelper } from "three";
 
 function LightWithHelper() {
     const lightRef = useRef();
@@ -25,53 +25,15 @@ function LightWithHelper() {
 
     return (
         <>
-            <directionalLight ref={lightRef} color="white" intensity={2} position={[0, 25, 0]} castShadow />
-            <spotLight color="red" intensity={1000} position={[0, 40, 50]} castShadow />
-            <spotLight color="red" intensity={1000} position={[0, 40, -50]} castShadow />
-            {/* <spotLight ref={lightRef} color="red" intensity={5} position={[0, 16, -10]} castShadow /> */}
+            <directionalLight color="white" intensity={1} position={[0, -30, 0]} castShadow />
+            <directionalLight color="white" intensity={1.5} position={[0, 30, 0]} castShadow />
+            <spotLight ref={lightRef} color="yellow" intensity={500} position={[-40, 20, 0]} castShadow />
         </>
     );
 }
 
-const PlaneVideo = memo(() => {
-    const model = useMemo(() => {
-        const video = document.createElement("video")
-        video.muted = false
-        video.loop = true
-        video.controls = true
-        video.playsInline = true
-        video.autoplay = true
-        video.src = process.env.PUBLIC_URL + 'videos/mv.mp4'
-        return { video }
-    }, [])
-
-    const handleClickScreen = useCallback(() => {
-        if (model.video.paused) {
-            model.video.play()
-        } else {
-            model.video.pause()
-        }
-    }, [model])
-
-    const texture = useMemo(() => {
-        const a = new VideoTexture(model.video)
-        return a
-    }, [model])
-
-    return <Suspense fallback={null}>
-        <mesh position={[0.15, 17, -46.3]}
-            onClick={handleClickScreen}
-        >
-            <planeGeometry args={[25, 20]} />
-            <meshBasicMaterial
-                map={texture}
-                toneMapped={false} />
-        </mesh>
-    </Suspense>
-})
-
 function Round() {
-    const room = useLoader(GLTFLoader, process.env.PUBLIC_URL + 'models/round_hall2.glb')
+    const room = useLoader(GLTFLoader, process.env.PUBLIC_URL + 'models/student_center.glb')
 
     useEffect(() => {
         if (!room) return;
@@ -93,10 +55,10 @@ function Round() {
                         // preset='park' blur={0}
                         background={"only"} files={process.env.PUBLIC_URL + 'textures/rotes_rathaus_8k.hdr'} />
                     <PerspectiveCamera makeDefault fov={70}
-                        position={[0, 18, -4]}
+                        position={[0, 22, 2]}
                     />
                     <OrbitControls
-                        target={[0, 10, -6]}
+                        target={[0, 22, 0]}
                         maxPolarAngle={Math.PI * 0.5}
                         minPolarAngle={Math.PI * 0.5}
                         enableZoom={true}
@@ -105,9 +67,7 @@ function Round() {
                         <primitive object={room.scene} />
                         <meshBasicMaterial />
                     </mesh>
-                    <PlaneVideo />
                 </Suspense>
-
                 <ambientLight intensity={0.5} />
                 <LightWithHelper />
             </Canvas>

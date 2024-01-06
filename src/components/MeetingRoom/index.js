@@ -276,21 +276,48 @@ function MeetingRoom() {
     }
 
     // const link = process.env.PUBLIC_URL + 'videos/mv.mp4'
-    // const [link, setLink] = useState(process.env.PUBLIC_URL + 'videos/mv.mp4')
+    // const [cameraToggle, setCameraToggle] = useState(false)
+    // const [streamer, setStreamer] = useState(null)
+    // const userVideo = useRef();
 
-    const PlaneVideo = memo(({ url }) => {
-        // const texture = useVideoTexture(process .env.PUBLIC_URL + 'videos/sunflower.3gp')
+    // useEffect(() => {
+    //     if (cameraToggle) {
+    //         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    //             const constraints = { video: true, audio: true }
+    //             navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
+    //                 userVideo.current.srcObject = stream
+    //             }).catch((error) => {
+    //                 console.error('Unable to access the camera/webcam!', error)
+    //             })
+    //         } else {
+    //             console.error('MediaDevices interface not available!')
+    //         }
+    //     }
+    //     console.log(123);
+    // }, [cameraToggle])
+
+    const PlaneVideo = memo(() => {
+        // const texture = useVideoTexture(process.env.PUBLIC_URL + 'videos/mv.mp4')
 
         const model = useMemo(() => {
             const video = document.createElement("video")
-            video.muted = false
-            video.loop = true
-            video.controls = true
+            video.autoplay = true
             video.playsInline = true
-            video.autoplay = false
-            video.src = url
+
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+                    .then((stream) => {
+                        // setStreamer(stream)
+                        video.srcObject = stream
+                        video.play()
+                    }).catch((error) => {
+                        console.error('Unable to access the camera/webcam!', error)
+                    })
+            } else {
+                console.error('MediaDevices interface not available!')
+            }
             return { video }
-        }, [url])
+        }, [])
 
         // let model = {}
         // model.video = document.createElement("video")
@@ -300,15 +327,21 @@ function MeetingRoom() {
         // model.video.playsInline = true
         // model.video.autoplay = false
         // model.video.src = url
-        // process.env.PUBLIC_URL + 'videos/mv.mp4'
 
-        const handleClickScreen = useCallback(() => {
-            if (model.video.paused) {
-                model.video.play()
-            } else {
-                model.video.pause()
-            }
-        }, [model])
+        // const handleClickScreen = () => {
+        // if (streamer) {
+        //     streamer.getTracks().forEach(function (track) {
+        //         track.stop();
+        //     });
+        // }
+        // setCameraToggle(true)
+        // }
+        // navigator.mediaDevices.getDisplayMedia({ video: true })
+        //     .then((stream) => {
+        //         model.srcObject = stream
+        //     }).catch((error) => {
+        //         console.error('Unable to access the camera/webcam!', error)
+        //     })
 
         const texture = useMemo(() => {
             const a = new VideoTexture(model.video)
@@ -317,7 +350,9 @@ function MeetingRoom() {
 
 
         return <Suspense fallback={null}>
-            <mesh position={[0.15, 3.25, -6.04]} onClick={handleClickScreen}>
+            <mesh position={[0.15, 3.25, -6.04]}
+            // onClick={handleClickScreen}
+            >
                 <planeGeometry args={[3.3, 2.5]} />
                 <meshBasicMaterial map={texture} toneMapped={false} />
             </mesh>
@@ -325,6 +360,14 @@ function MeetingRoom() {
     })
 
     return <div className="w-screen h-screen">
+        {/* {cameraToggle && <>
+            <div className="z-20 absolute right-0 left-0 top-0 bottom-0 bg-black opacity-60">
+            </div>
+            <div className="z-30 absolute right-0 left-0 top-0 bottom-0 flex">
+                <video className="m-auto" ref={userVideo} playsInline autoPlay />
+            </div>
+        </>
+        } */}
         <div className="fixed w-1/5 bg-white right-0 top-0 bottom-0">
             <div className="h-10 flex justify-between mx-4 my-4">
                 <div className="flex justify-center items-center">
@@ -415,7 +458,8 @@ function MeetingRoom() {
                     <Chair />
                     <Wall />
                     <Floor />
-                    <PlaneVideo url={process.env.PUBLIC_URL + 'videos/mv.mp4'} />
+                    {/* {selectedRoomId && <PlaneVideo />} */}
+                    <PlaneVideo />
                 </Suspense>
                 <ambientLight intensity={0.5} />
                 {/* <axesHelper args={[100]} /> */}

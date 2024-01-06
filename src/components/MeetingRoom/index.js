@@ -3,7 +3,7 @@ import { AuthContext } from "~/Context/AuthProvider";
 import Modal from "../Modal";
 import { signOut } from 'firebase/auth'
 import { auth, db } from "~/firebase/config";
-import { Fragment, Suspense, memo, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, Suspense, memo, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { addDoc, collection, doc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { RiDropdownList } from "react-icons/ri";
 import { IoClose, IoSend } from "react-icons/io5";
@@ -39,6 +39,9 @@ function MeetingRoom() {
     const [orbitCamera, setOrbitCamera] = useState([0, 3, 0])
     const [selectedChair, setSelectedChair] = useState([])
     const [outChair, setOutChair] = useState(false)
+    const [screen, setScreen] = useState(null)
+    const [clickScreen, setClickScreen] = useState(false)
+    const videoScreen = useRef()
     const cancelButtonRef = useRef(null)
     const location = useLocation()
     const navigate = useNavigate();
@@ -105,6 +108,7 @@ function MeetingRoom() {
         }
         navigate('/meeting')
         setSelectedRoomId(null)
+        setScreen(null)
     }
 
     const handleSubmit = () => {
@@ -276,57 +280,65 @@ function MeetingRoom() {
     }
 
     // const link = process.env.PUBLIC_URL + 'videos/mv.mp4'
-    // const [cameraToggle, setCameraToggle] = useState(false)
     // const [streamer, setStreamer] = useState(null)
     // const userVideo = useRef();
 
-    // useEffect(() => {
-    //     if (cameraToggle) {
-    //         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-    //             const constraints = { video: true, audio: true }
-    //             navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
-    //                 userVideo.current.srcObject = stream
-    //             }).catch((error) => {
-    //                 console.error('Unable to access the camera/webcam!', error)
-    //             })
-    //         } else {
-    //             console.error('MediaDevices interface not available!')
-    //         }
-    //     }
-    //     console.log(123);
-    // }, [cameraToggle])
-
-    const PlaneVideo = memo(() => {
+    const PlaneVideo = memo(({ screen, clickScreen }) => {
         // const texture = useVideoTexture(process.env.PUBLIC_URL + 'videos/mv.mp4')
 
-        const model = useMemo(() => {
-            const video = document.createElement("video")
-            video.autoplay = true
-            video.playsInline = true
+        // const model = useMemo(() => {
+        //     const video = document.createElement("video")
+        //     video.autoplay = true
+        //     video.playsInline = true
 
-            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-                    .then((stream) => {
-                        // setStreamer(stream)
-                        video.srcObject = stream
-                        video.play()
-                    }).catch((error) => {
-                        console.error('Unable to access the camera/webcam!', error)
-                    })
-            } else {
-                console.error('MediaDevices interface not available!')
-            }
-            return { video }
-        }, [])
+        //     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        //         navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+        //             .then((stream) => {
+        //                 // setStreamer(stream)
+        //                 video.srcObject = stream
+        //                 video.play()
+        //             }).catch((error) => {
+        //                 console.error('Unable to access the camera/webcam!', error)
+        //             })
+        //     } else {
+        //         console.error('MediaDevices interface not available!')
+        //     }
 
-        // let model = {}
-        // model.video = document.createElement("video")
+        //     return { video }
+        // }, [])
+
+        let model = {}
+        model.video = document.createElement("video")
+        model.video.playsInline = true
+        model.video.autoplay = false
         // model.video.muted = false
         // model.video.loop = true
         // model.video.controls = true
-        // model.video.playsInline = true
-        // model.video.autoplay = false
         // model.video.src = url
+
+        if (screen === 'camera') {
+            // if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+                .then((stream) => {
+                    model.video.srcObject = stream
+                    model.video.play()
+                }).catch((error) => {
+                    console.error('Unable to access the camera/webcam!', error)
+                })
+            // } else {
+            //     console.error('MediaDevices interface not available!')
+            // }
+        }
+
+        if (screen === 'screen') {
+            navigator.mediaDevices.getDisplayMedia({ video: true })
+                .then((stream) => {
+                    model.video.srcObject = stream
+                    model.video.play()
+                }).catch((error) => {
+                    console.error('Unable to access the camera/webcam!', error)
+                })
+        }
 
         // const handleClickScreen = () => {
         // if (streamer) {
@@ -334,24 +346,12 @@ function MeetingRoom() {
         //         track.stop();
         //     });
         // }
-        // setCameraToggle(true)
-        // }
-        // navigator.mediaDevices.getDisplayMedia({ video: true })
-        //     .then((stream) => {
-        //         model.srcObject = stream
-        //     }).catch((error) => {
-        //         console.error('Unable to access the camera/webcam!', error)
-        //     })
 
-        const texture = useMemo(() => {
-            const a = new VideoTexture(model.video)
-            return a
-        }, [model])
-
+        const texture = new VideoTexture(model.video)
 
         return <Suspense fallback={null}>
             <mesh position={[0.15, 3.25, -6.04]}
-            // onClick={handleClickScreen}
+                onClick={clickScreen}
             >
                 <planeGeometry args={[3.3, 2.5]} />
                 <meshBasicMaterial map={texture} toneMapped={false} />
@@ -359,15 +359,39 @@ function MeetingRoom() {
         </Suspense>
     })
 
+    const handleSetScreen = () => {
+        setScreen('screen')
+    }
+
+    const handleSetCamera = () => {
+        setScreen('camera')
+    }
+
+    const handleClickScreen = () => {
+        setClickScreen(true)
+
+        if (screen === 'camera') {
+            navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+                .then((stream) => {
+                    videoScreen.current.srcObject = stream
+                    videoScreen.current.play()
+                }).catch((error) => {
+                    console.error('Unable to access the camera/webcam!', error)
+                })
+        }
+
+        if (screen === 'screen') {
+            navigator.mediaDevices.getDisplayMedia({ video: true })
+                .then((stream) => {
+                    videoScreen.current.srcObject = stream
+                    videoScreen.current.play()
+                }).catch((error) => {
+                    console.error('Unable to access the camera/webcam!', error)
+                })
+        }
+    }
+
     return <div className="w-screen h-screen">
-        {/* {cameraToggle && <>
-            <div className="z-20 absolute right-0 left-0 top-0 bottom-0 bg-black opacity-60">
-            </div>
-            <div className="z-30 absolute right-0 left-0 top-0 bottom-0 flex">
-                <video className="m-auto" ref={userVideo} playsInline autoPlay />
-            </div>
-        </>
-        } */}
         <div className="fixed w-1/5 bg-white right-0 top-0 bottom-0">
             <div className="h-10 flex justify-between mx-4 my-4">
                 <div className="flex justify-center items-center">
@@ -432,6 +456,12 @@ function MeetingRoom() {
                 </div>
             </div>
             <div className="z-10 absolute right-6 bottom-6 font-medium text-sm text-white">
+                {selectedRoomId && dataUser[0]?.role === "TEACHER" && <button onClick={handleSetCamera} className="mr-6 rounded-xl px-5 py-2.5 text-center bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:bg-blue-700">
+                    Bật Camera
+                </button>}
+                {selectedRoomId && dataUser[0]?.role === "TEACHER" && <button onClick={handleSetScreen} className="mr-6 rounded-xl px-5 py-2.5 text-center bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:bg-blue-700">
+                    Chia sẻ màn hình
+                </button>}
                 {outChair && <button onClick={handeOutChair} className="mr-6 rounded-xl px-5 py-2.5 text-center bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:bg-blue-700">
                     Rời ghế
                 </button>}
@@ -459,7 +489,7 @@ function MeetingRoom() {
                     <Wall />
                     <Floor />
                     {/* {selectedRoomId && <PlaneVideo />} */}
-                    <PlaneVideo />
+                    <PlaneVideo screen={screen} clickScreen={handleClickScreen} />
                 </Suspense>
                 <ambientLight intensity={0.5} />
                 {/* <axesHelper args={[100]} /> */}
@@ -473,6 +503,14 @@ function MeetingRoom() {
                 </div>
             }
         </div>
+        {clickScreen &&
+            <div className="z-20 fixed right-0 left-0 top-0 bottom-0 bg-black">
+                <div className="flex flex-col items-center justify-center w-full h-full">
+                    <video className="w-3/4 h-3/4" ref={videoScreen} autoPlay playsInline />
+                    <button className="text-white" onClick={() => setClickScreen(false)}>Thoát</button>
+                </div>
+            </div>
+        }
         <Modal />
         <Transition.Root show={openSelectChair} as={Fragment}>
             <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={setOpenSelectChair}>

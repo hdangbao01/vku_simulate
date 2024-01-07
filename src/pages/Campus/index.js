@@ -149,6 +149,7 @@ function Room() {
 
     function Character() {
         // const { camera, scene } = useThree();
+        // const chaRef = useRef()
         const chaRef = useRef()
 
         const gltf = useLoader(GLTFLoader, process.env.PUBLIC_URL + 'models/Soldier.glb')

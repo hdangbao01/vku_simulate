@@ -3,7 +3,7 @@ import { AuthContext } from "~/Context/AuthProvider";
 import Modal from "../Modal";
 import { signOut } from 'firebase/auth'
 import { auth, db } from "~/firebase/config";
-import { Fragment, Suspense, memo, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, Suspense, memo, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { addDoc, collection, doc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { RiDropdownList } from "react-icons/ri";
 import { IoClose, IoSend } from "react-icons/io5";
@@ -39,24 +39,12 @@ function MeetingRoom() {
     const [orbitCamera, setOrbitCamera] = useState([0, 3, 0])
     const [selectedChair, setSelectedChair] = useState([])
     const [outChair, setOutChair] = useState(false)
+    const [screen, setScreen] = useState(null)
+    const [clickScreen, setClickScreen] = useState(false)
+    const videoScreen = useRef()
     const cancelButtonRef = useRef(null)
     const location = useLocation()
     const navigate = useNavigate();
-
-    // console.log(database._repoInternal);
-    // const handleRef = () => {
-    //     set(ref(database, 'meets'), {
-    //         audio: true,
-    //         video: false,
-    //         screen: false,
-    //     })
-    //         .then(() => {
-    //             console.log("Success");
-    //         })
-    //         .catch((error) => {
-    //             console.log("Failed");
-    //         });
-    // }
 
     // handle Website
     const handleSignOut = async () => {
@@ -105,6 +93,7 @@ function MeetingRoom() {
         }
         navigate('/meeting')
         setSelectedRoomId(null)
+        setScreen(null)
     }
 
     const handleSubmit = () => {
@@ -163,6 +152,7 @@ function MeetingRoom() {
     }, [allMess.length]);
 
     // handle 3D
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const materialWall = new MeshStandardMaterial({ color: "#E7CBA9" });
 
     const room = useLoader(GLTFLoader, process.env.PUBLIC_URL + 'models/room_model.glb')
@@ -203,7 +193,7 @@ function MeetingRoom() {
             }
         });
 
-    }, [room, chair, wall_room, floor]);
+    }, [room, chair, wall_room, floor, materialWall]);
 
     const Room = () => {
         return <mesh>
@@ -275,54 +265,116 @@ function MeetingRoom() {
         </mesh>
     }
 
-    // const link = process.env.PUBLIC_URL + 'videos/mv.mp4'
-    // const [link, setLink] = useState(process.env.PUBLIC_URL + 'videos/mv.mp4')
+    // const [streamer, setStreamer] = useState(null)
+    // const userVideo = useRef();
 
-    const PlaneVideo = memo(({ url }) => {
-        // const texture = useVideoTexture(process .env.PUBLIC_URL + 'videos/sunflower.3gp')
+    const PlaneVideo = memo(({ screen, clickScreen }) => {
+        // const texture = useVideoTexture(process.env.PUBLIC_URL + 'videos/mv.mp4')
 
-        const model = useMemo(() => {
-            const video = document.createElement("video")
-            video.muted = false
-            video.loop = true
-            video.controls = true
-            video.playsInline = true
-            video.autoplay = false
-            video.src = url
-            return { video }
-        }, [url])
+        // const model = useMemo(() => {
+        //     const video = document.createElement("video")
+        //     video.autoplay = true
+        //     video.playsInline = true
 
-        // let model = {}
-        // model.video = document.createElement("video")
+        //     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        //         navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+        //             .then((stream) => {
+        //                 // setStreamer(stream)
+        //                 video.srcObject = stream
+        //                 video.play()
+        //             }).catch((error) => {
+        //                 console.error('Unable to access the camera/webcam!', error)
+        //             })
+        //     } else {
+        //         console.error('MediaDevices interface not available!')
+        //     }
+
+        //     return { video }
+        // }, [])
+
+        let model = {}
+        model.video = document.createElement("video")
+        model.video.playsInline = true
+        model.video.autoplay = false
         // model.video.muted = false
         // model.video.loop = true
         // model.video.controls = true
-        // model.video.playsInline = true
-        // model.video.autoplay = false
         // model.video.src = url
-        // process.env.PUBLIC_URL + 'videos/mv.mp4'
 
-        const handleClickScreen = useCallback(() => {
-            if (model.video.paused) {
-                model.video.play()
-            } else {
-                model.video.pause()
-            }
-        }, [model])
+        if (screen === 'camera') {
+            // if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+                .then((stream) => {
+                    model.video.srcObject = stream
+                    model.video.play()
+                }).catch((error) => {
+                    console.error('Unable to access the camera/webcam!', error)
+                })
+            // } else {
+            //     console.error('MediaDevices interface not available!')
+            // }
+        }
 
-        const texture = useMemo(() => {
-            const a = new VideoTexture(model.video)
-            return a
-        }, [model])
+        if (screen === 'screen') {
+            navigator.mediaDevices.getDisplayMedia({ video: true })
+                .then((stream) => {
+                    model.video.srcObject = stream
+                    model.video.play()
+                }).catch((error) => {
+                    console.error('Unable to access the camera/webcam!', error)
+                })
+        }
 
+        // const handleClickScreen = () => {
+        // if (streamer) {
+        //     streamer.getTracks().forEach(function (track) {
+        //         track.stop();
+        //     });
+        // }
+
+        const texture = new VideoTexture(model.video)
 
         return <Suspense fallback={null}>
-            <mesh position={[0.15, 3.25, -6.04]} onClick={handleClickScreen}>
+            <mesh position={[0.15, 3.25, -6.04]}
+                onClick={clickScreen}
+            >
                 <planeGeometry args={[3.3, 2.5]} />
                 <meshBasicMaterial map={texture} toneMapped={false} />
             </mesh>
         </Suspense>
     })
+
+    const handleSetScreen = () => {
+        setScreen('screen')
+    }
+
+    const handleSetCamera = () => {
+        setScreen('camera')
+    }
+
+    const handleClickScreen = () => {
+        setClickScreen(true)
+
+        if (screen === 'camera') {
+            navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+                .then((stream) => {
+                    videoScreen.current.srcObject = stream
+                    videoScreen.current.play()
+                }).catch((error) => {
+                    console.error('Unable to access the camera/webcam!', error)
+                })
+        }
+
+        if (screen === 'screen') {
+            navigator.mediaDevices.getDisplayMedia({ video: true })
+                .then((stream) => {
+                    videoScreen.current.srcObject = stream
+                    videoScreen.current.play()
+                }).catch((error) => {
+                    console.error('Unable to access the camera/webcam!', error)
+                })
+        }
+    }
 
     return <div className="w-screen h-screen">
         <div className="fixed w-1/5 bg-white right-0 top-0 bottom-0">
@@ -368,16 +420,18 @@ function MeetingRoom() {
                     Thành viên: {!!location.search === true && members.map(member => <img key={member?.uid} className="w-9 h-9 rounded-full object-cover ml-2" src={member?.photoURL} alt="Avatar" />)}
                 </div>
                 <div className="overflow-auto h-52 flex flex-col">
-                    {allMess.map(mess => <div ref={refMess} key={mess?.id} className="flex items-center mb-2">
-                        <img className="w-9 h-9 rounded-full object-cover mx-2" src={mess?.photoURL} alt="Avatar" />
-                        <div>
-                            <div className="flex items-center">
-                                <p className="mr-2 font-medium">{mess?.displayName}</p>
-                                <p className="font-light">{formatDate(mess?.createdAt?.seconds)}</p>
+                    {!!location.search === true &&
+                        allMess.map(mess => <div ref={refMess} key={mess?.id} className="flex items-center mb-2">
+                            <img className="w-9 h-9 rounded-full object-cover mx-2" src={mess?.photoURL} alt="Avatar" />
+                            <div>
+                                <div className="flex items-center">
+                                    <p className="mr-2 font-medium">{mess?.displayName}</p>
+                                    <p className="font-light">{formatDate(mess?.createdAt?.seconds)}</p>
+                                </div>
+                                <p className="font-light">{mess?.text}</p>
                             </div>
-                            <p className="font-light">{mess?.text}</p>
-                        </div>
-                    </div>)}
+                        </div>)
+                    }
                 </div>
                 <div className="w-full flex items-center absolute bottom-2 px-2">
                     <input className="w-full font-light border border-bborder-b-gray-950 rounded-3xl px-4 py-2" type="text" placeholder="Nhập gì đó..."
@@ -389,6 +443,12 @@ function MeetingRoom() {
                 </div>
             </div>
             <div className="z-10 absolute right-6 bottom-6 font-medium text-sm text-white">
+                {selectedRoomId && dataUser[0]?.role === "TEACHER" && <button onClick={handleSetCamera} className="mr-6 rounded-xl px-5 py-2.5 text-center bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:bg-blue-700">
+                    Bật Camera
+                </button>}
+                {selectedRoomId && dataUser[0]?.role === "TEACHER" && <button onClick={handleSetScreen} className="mr-6 rounded-xl px-5 py-2.5 text-center bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:bg-blue-700">
+                    Chia sẻ màn hình
+                </button>}
                 {outChair && <button onClick={handeOutChair} className="mr-6 rounded-xl px-5 py-2.5 text-center bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:bg-blue-700">
                     Rời ghế
                 </button>}
@@ -415,10 +475,12 @@ function MeetingRoom() {
                     <Chair />
                     <Wall />
                     <Floor />
-                    <PlaneVideo url={process.env.PUBLIC_URL + 'videos/mv.mp4'} />
+                    {/* {selectedRoomId && <PlaneVideo />} */}
+                    {!!location.search === true &&
+                        <PlaneVideo screen={screen} clickScreen={handleClickScreen} />
+                    }
                 </Suspense>
                 <ambientLight intensity={0.5} />
-                {/* <axesHelper args={[100]} /> */}
                 <LightWithHelper />
             </Canvas>
             {!selectedRoomId &&
@@ -429,6 +491,14 @@ function MeetingRoom() {
                 </div>
             }
         </div>
+        {clickScreen &&
+            <div className="z-20 fixed right-0 left-0 top-0 bottom-0 bg-black">
+                <div className="flex flex-col items-center justify-center w-full h-full">
+                    <video className="w-3/4 h-3/4" ref={videoScreen} autoPlay playsInline />
+                    <button className="text-white" onClick={() => setClickScreen(false)}>Thoát</button>
+                </div>
+            </div>
+        }
         <Modal />
         <Transition.Root show={openSelectChair} as={Fragment}>
             <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={setOpenSelectChair}>

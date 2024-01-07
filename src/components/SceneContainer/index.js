@@ -18,7 +18,7 @@ const SceneContainer = ({ posPerspectiveCamera, autoRotate }) => {
 
         window.addEventListener("keydown", keydownHandler);
         return () => window.removeEventListener("keydown", keydownHandler);
-    }, [thirdPerson]);
+    }, [posPerspectiveCamera, thirdPerson]);
 
     return (
         <Suspense fallback={null}>

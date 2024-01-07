@@ -4,6 +4,7 @@ import { Environment, OrbitControls, PerspectiveCamera, useAnimations } from '@r
 import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber'
 import { Fragment, Suspense, useEffect, useRef, useState } from 'react';
 import { IoClose } from 'react-icons/io5';
+import { Link } from 'react-router-dom';
 import { AnimationMixer, Quaternion, Vector3 } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import Header from '~/components/Header';
@@ -135,9 +136,11 @@ function Room() {
     const [thirdPerson, setThirdPerson] = useState(false);
     const [cameraPosition, setCameraPosition] = useState([-10, 50, 110]);
     const [nameObject, setNameObject] = useState('');
+    const [togleZoom, setTogleZoom] = useState(false);
     const camRef = useRef()
     const controlsRef = useRef();
     const cancelButtonRef = useRef(null)
+    const canvasRef = useRef()
 
     function seenHandle() {
         if (thirdPerson) setCameraPosition([-10, 50, 110 + Math.random() * 0.01]);
@@ -283,7 +286,7 @@ function Room() {
         });
 
         return (
-            <mesh ref={chaRef}>
+            <mesh ref={chaRef} position={[0, 0, 20]}>
                 <primitive object={gltf.scene} />
             </mesh>
         );
@@ -291,17 +294,49 @@ function Room() {
 
     const [opeModal, setOpenModal] = useState(false)
 
+    // const textFollow = useRef(null)
+
     const handlOpenModal = (e) => {
+        console.log(e?.object?.name);
         if (e?.object?.name) {
             setNameObject(e?.object?.name)
-            setOpenModal(true)
+            // setOpenModal(true)
         }
+
+        // const followText = textFollow.current
+        // const boxPos = new Vector3()
+
+        // const boxPosOff = new Vector3()
+        // const Y_AXIS = new Vector3(0, 1, 0)
+
+        // boxPosOff.copy(e?.object?.position)
+        // boxPosOff.sub(camRef.current.position)
+        // boxPosOff.normalize()
+        // boxPosOff.applyAxisAngle(Y_AXIS, -Math.PI / 2)
+        // boxPosOff.multiplyScalar(0.5)
+        // boxPosOff.y = 1.5
+
+        // boxPos.setFromMatrixPosition(e?.object?.matrixWorld)
+        // // boxPos.add(boxPosOff)
+        // boxPos.project(camRef.current)
+        // const widthHafl = canvasRef.current.width / 2
+        // const heightHafl = canvasRef.current.height / 2
+        // const rect = canvasRef.current.getBoundingClientRect()
+        // boxPos.x = rect.left + (boxPos.x * widthHafl) + widthHafl
+        // boxPos.y = rect.top + (boxPos.y * heightHafl) + heightHafl
+        // followText.style.top = `${boxPos.y}px`
+        // followText.style.left = `${boxPos.x}px`
+        // console.log(canvasRef.current);
+    }
+
+    const handlClickCanvas = (e) => {
+        console.log(e);
     }
 
     return (
         <div className='w-full h-full relative'>
             <Header />
-            <Canvas shadows>
+            <Canvas ref={canvasRef} onClick={handlClickCanvas} shadows>
                 <Physics broadphase="SAP" gravity={[0, -2.6, 0]}>
                     <Suspense fallback={<Load />}>
                         <Environment preset='lobby' background={"only"} blur={1} />
@@ -331,10 +366,161 @@ function Room() {
                 </Physics>
                 <ambientLight intensity={0.25} />
                 <LightWithHelper />
+                {/* <Stats /> */}
             </Canvas>
+            {/* <div ref={textFollow} className='fixed top-40 left-10 z-20 m-6 w-60 h-96 bg-white p-4'>
+                <img className='w-60 h-44 rounded-md object-cover' src='https://lh5.googleusercontent.com/p/AF1QipM8_V4zD9m2JKUFXDjtKh_Adso1MxNYpz9IN9BE=s435-k-no' alt='object 3D' />
+                <div>
+                    <p className='font-semibold text-lg my-4'>
+                        Trung tâm sinh viên
+                    </p>
+                    <p className='text-sm'>Thông tin: Nơi diễn ra các hoạt động dành cho sinh viên
+                        (Các sự kiện, cuộc thi, tiết học thể dục)</p>
+                </div>
+            </div> */}
+            {nameObject.includes("887") && <div className='fixed bottom-6 left-6 z-20 m-6 w-60 h-96 bg-white p-4'>
+                <img className='w-60 h-44 rounded-md object-cover' src='https://xdcs.cdnchinhphu.vn/446259493575335936/2023/8/22/vku-1692719013676637353630.jpg' alt='object 3D' />
+                <div>
+                    <p className='font-semibold text-lg my-4'>
+                        Trung tâm hành chính
+                    </p>
+                    <p className='text-sm'>Thông tin: Toà nhà trung tâm của nhà trường</p>
+                    <button className='absolute right-4 bottom-2' onClick={() => setNameObject('')}>Tắt</button>
+                </div>
+            </div>}
+            {nameObject.includes("038") && <div className='fixed bottom-6 left-6 z-20 m-6 w-60 h-96 bg-white p-4'>
+                <img className='w-60 h-44 rounded-md object-cover' src='https://lh5.googleusercontent.com/p/AF1QipM8_V4zD9m2JKUFXDjtKh_Adso1MxNYpz9IN9BE=s435-k-no' alt='object 3D' />
+                <div>
+                    <p className='font-semibold text-lg my-4'>
+                        Trung tâm sinh viên
+                    </p>
+                    <p className='text-sm'>Thông tin: Nơi diễn ra các hoạt động dành cho sinh viên
+                        (Các sự kiện, cuộc thi, tiết học thể dục)</p>
+                    <Link to={'/center'}>
+                        <p className='text-blue-600'>
+                            Xem phòng
+                        </p>
+                    </Link>
+                    <button className='absolute right-4 bottom-2' onClick={() => setNameObject('')}>Tắt</button>
+                </div>
+            </div>}
+            {nameObject.includes("1298") && <div className='fixed bottom-6 left-6 z-20 m-6 w-60 h-96 bg-white p-4'>
+                <img className='w-60 h-44 rounded-md object-cover' src='https://lh5.googleusercontent.com/p/AF1QipNAtTx4CzUzdBdoJBx6xK9ZsWviZeTyAmkW__cK=w203-h135-k-no' alt='object 3D' />
+                <div>
+                    <p className='font-semibold text-lg my-4'>
+                        Viện eSTI & Thư viện
+                    </p>
+                    <p className='text-sm'>Thông tin: Thư viện và học tập, nghiên cứu dành cho sinh viên</p>
+                    <button className='absolute right-4 bottom-2' onClick={() => setNameObject('')}>Tắt</button>
+                </div>
+            </div>}
+            {nameObject.includes("082") && <div className='fixed bottom-6 left-6 z-20 m-6 w-60 h-96 bg-white p-4'>
+                <img className='w-60 h-44 rounded-md object-cover' src='https://lh5.googleusercontent.com/p/AF1QipPPL_oBUCsY6HP_Os33FbRbNafCru5-WyOGZ9lx=s452-k-no' alt='object 3D' />
+                <div>
+                    <p className='font-semibold text-lg my-4'>
+                        Giảng đường khu A
+                    </p>
+                    <p className='text-sm'>Thông tin: Dãy phòng học lý thuyết và phòng thực hành</p>
+                    <p className='text-sm'>Gồm 3 tầng và 2 dãy phòng</p>
+                    <Link to={'/room'}>
+                        <p className='text-blue-600'>
+                            Xem phòng học
+                        </p>
+                    </Link>
+                    <button className='absolute right-4 bottom-2' onClick={() => setNameObject('')}>Tắt</button>
+                </div>
+            </div>}
+            {nameObject.includes("053") && <div className='fixed bottom-6 left-6 z-20 m-6 w-60 h-96 bg-white p-4'>
+                <img className='w-60 h-44 rounded-md object-cover' src='https://lh5.googleusercontent.com/p/AF1QipPPL_oBUCsY6HP_Os33FbRbNafCru5-WyOGZ9lx=s452-k-no' alt='object 3D' />
+                <div>
+                    <p className='font-semibold text-lg my-4'>
+                        Giảng đường khu B
+                    </p>
+                    <p className='text-sm'>Thông tin: Dãy phòng học lý thuyết và phòng thực hành</p>
+                    <p className='text-sm'>Gồm 3 tầng và 2 dãy phòng</p>
+                    <Link to={'/room'}>
+                        <p className='text-blue-600'>
+                            Xem phòng học
+                        </p>
+                    </Link>
+                    <button className='absolute right-4 bottom-2' onClick={() => setNameObject('')}>Tắt</button>
+                </div>
+            </div>}
+            {nameObject.includes("1203") && <div className='fixed bottom-6 left-6 z-20 m-6 w-60 h-96 bg-white p-4'>
+                <img className='w-60 h-44 rounded-md object-cover' src='https://lh5.googleusercontent.com/p/AF1QipPPL_oBUCsY6HP_Os33FbRbNafCru5-WyOGZ9lx=s452-k-no' alt='object 3D' />
+                <div>
+                    <p className='font-semibold text-lg my-4'>
+                        Trung tâm, Văn phòng, Giàng đường khu E
+                    </p>
+                    <p className='text-sm'>Thông tin: Gồm 3 tầng và 2 dãy phòng</p>
+                    <button className='absolute right-4 bottom-2' onClick={() => setNameObject('')}>Tắt</button>
+                </div>
+            </div>}
+            {nameObject.includes("1089") && <div className='fixed bottom-6 left-6 z-20 m-6 w-60 h-96 bg-white p-4'>
+                <img className='w-60 h-44 rounded-md object-cover' src='https://lh5.googleusercontent.com/p/AF1QipPPL_oBUCsY6HP_Os33FbRbNafCru5-WyOGZ9lx=s452-k-no' alt='object 3D' />
+                <div>
+                    <p className='font-semibold text-lg my-4'>
+                        Phòng Khoa khu D
+                    </p>
+                    <p className='text-sm'>Thông tin: Gồm 3 tầng và 2 dãy phòng</p>
+                    <button className='absolute right-4 bottom-2' onClick={() => setNameObject('')}>Tắt</button>
+                </div>
+            </div>}
+            {nameObject.includes("1293") && <div className='fixed bottom-6 left-6 z-20 m-6 w-60 h-96 bg-white p-4'>
+                <img className='w-60 h-44 rounded-md object-cover' src='https://lh5.googleusercontent.com/p/AF1QipPPL_oBUCsY6HP_Os33FbRbNafCru5-WyOGZ9lx=s452-k-no' alt='object 3D' />
+                <div>
+                    <p className='font-semibold text-lg my-4'>
+                        Giảng đường khu C
+                    </p>
+                    <p className='text-sm'>Thông tin: Gồm 2 tầng và dãy phòng lớn</p>
+                    <button className='absolute right-4 bottom-2' onClick={() => setNameObject('')}>Tắt</button>
+                </div>
+            </div>}
+            {nameObject.includes("Cylinder") && <div className='fixed bottom-6 left-6 z-20 m-6 w-60 h-96 bg-white p-4'>
+                <img className='w-60 h-44 rounded-md object-cover' src='https://lh5.googleusercontent.com/p/AF1QipNhBLUk9BnkgvTTHbLUCp1784X-yYclF6zMTdB4=s508-k-no' alt='object 3D' />
+                <div>
+                    <p className='font-semibold text-lg my-4'>
+                        Hội trường tròn
+                    </p>
+                    <p className='text-sm'>Thông tin: Nơi diễn ra các buổi ngoại khoá, Seminar</p>
+                    <Link to={'/round'}>
+                        <p className='text-blue-600'>
+                            Xem hội trường
+                        </p>
+                    </Link>
+                    <button className='absolute right-4 bottom-2' onClick={() => setNameObject('')}>Tắt</button>
+                </div>
+            </div>}
+            {nameObject.includes("Circle") && <div className='fixed bottom-6 left-6 z-20 m-6 w-60 h-96 bg-white p-4'>
+                <img className='w-60 h-44 rounded-md object-cover' src='https://lh5.googleusercontent.com/p/AF1QipPfwOYotPeycLeLjOECs5Dp8RQDXw4moytGFCi1=s438-k-no' alt='object 3D' />
+                <div>
+                    <p className='font-semibold text-lg my-4'>
+                        Đài phun nước
+                    </p>
+                    <p className='text-sm'>Thông tin: Nằm ở trung tâm khuôn viên trường</p>
+                    <button className='absolute right-4 bottom-2' onClick={() => setNameObject('')}>Tắt</button>
+                </div>
+            </div>}
+            {nameObject.includes("039") && <div className='fixed bottom-6 left-6 z-20 m-6 w-60 h-96 bg-white p-4'>
+                <img className='w-60 h-44 rounded-md object-cover' src='https://lh5.googleusercontent.com/p/AF1QipPPL_oBUCsY6HP_Os33FbRbNafCru5-WyOGZ9lx=s452-k-no' alt='object 3D' />
+                <div>
+                    <p className='font-semibold text-lg my-4'>
+                        Khu Ký túc xá
+                    </p>
+                    <p className='text-sm'>Thông tin: Gồm 3 tầng và 1 dãy phòng</p>
+                    <button className='absolute right-4 bottom-2' onClick={() => setNameObject('')}>Tắt</button>
+                </div>
+            </div>}
             <div className='w-1/4 fixed top-6 left-6 shadow-bx bg-white'>
-                <img className='w-full' src={require('~/assets/images/mapp.jpg')} alt='Map-VKU' />
+                <img className='w-full' src={require('~/assets/images/mapp.jpg')} alt='Map-VKU'
+                    onClick={() => setTogleZoom(true)}
+                />
             </div>
+            {togleZoom && <div className='z-30 fixed top-0 bottom-0 right-0 left-0 bg-black' onClick={() => setTogleZoom(false)}>
+                <img className='w-11/12 h-11/12' src={require('~/assets/images/mapp.jpg')} alt='Map-VKU'
+                    onClick={() => setTogleZoom(false)}
+                />
+            </div>}
             {thirdPerson ?
                 <div className='fixed top-6 right-6 shadow-bx px-8 py-4 bg-white rounded-3xl font-medium'>
                     <p className='text-xl font-semibold'>Điều khiển</p>

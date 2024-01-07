@@ -7,7 +7,7 @@ function NavItem({ item, location }) {
     //  className={`cursor-pointer hover:text-sky-600 ml-8${active ? ' text-sky-600' : ''}`}
     >
         {drops ? <>
-            <p key={label} className={`cursor-pointer hover:text-blue-600 ml-8${location.pathname === '/campus' || location.pathname === '/room' || location.pathname === '/round' ? ' text-blue-600' : ''}`}>
+            <p key={label} className={`cursor-pointer hover:text-blue-600 ml-8${location.pathname === '/campus' || location.pathname === '/room' || location.pathname === '/round' || location.pathname === '/center' ? ' text-blue-600' : ''}`}>
                 {/* <p key={label} className={`cursor-pointer hover:text-blue-600 ml-8${nameActive === label ? ' text-blue-600' : ''}`}> */}
                 {label}
             </p>

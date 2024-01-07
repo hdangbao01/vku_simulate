@@ -25,28 +25,38 @@ function Admin() {
     const navigate = useNavigate()
 
     //Call Video
-    const [email, setEmail] = useState('')
-    const [room, setRoom] = useState('')
+    // const [email, setEmail] = useState('')
+    // const [room, setRoom] = useState('')
+    // const shareScreen = useRef()
 
-    const socket = useSocket()
+    // const handleShareScreen = () => {
+    //     navigator.mediaDevices.getDisplayMedia({ video: true })
+    //         .then((stream) => {
+    //             shareScreen.current.srcObject = stream
+    //         }).catch((error) => {
+    //             console.error('Unable to access the camera/webcam!', error)
+    //         })
+    // }
 
-    const handleJoin = useCallback((e) => {
-        e.preventDefault()
-        socket.emit('room:join', { email, room })
-    }, [email, room, socket])
+    // const socket = useSocket()
 
-    const handleJoinRoom = useCallback((data) => {
-        const { email, room } = data
-        navigate(`/call/${room}`)
-    }, [navigate])
+    // const handleJoin = useCallback((e) => {
+    //     e.preventDefault()
+    //     socket.emit('room:join', { email, room })
+    // }, [email, room, socket])
 
-    useEffect(() => {
-        socket.on('room:join', handleJoinRoom)
+    // const handleJoinRoom = useCallback((data) => {
+    //     const { email, room } = data
+    //     navigate(`/call/${room}`)
+    // }, [navigate])
 
-        return () => {
-            socket.off('room:join', handleJoinRoom)
-        }
-    }, [socket, handleJoinRoom])
+    // useEffect(() => {
+    //     socket.on('room:join', handleJoinRoom)
+
+    //     return () => {
+    //         socket.off('room:join', handleJoinRoom)
+    //     }
+    // }, [socket, handleJoinRoom])
 
     // Admin
     useEffect(() => {
@@ -141,7 +151,8 @@ function Admin() {
                         {active === 0 &&
                             <div className="text-3xl mx-4 my-4">
                                 <p>VKU SIMULATE</p>
-                                <form onSubmit={handleJoin}>
+                                {/* Call Video */}
+                                {/* <form onSubmit={handleJoin}>
                                     <label htmlFor="name">Name</label>
                                     <input
                                         type="text" id="name" className="text-black p-2"
@@ -153,7 +164,9 @@ function Admin() {
                                         value={room} onChange={e => setRoom(e.target.value)}
                                     />
                                     <button className="border-2 border-solid border-white p-2">Join</button>
-                                </form>
+                                </form> */}
+                                {/* <video ref={shareScreen} autoPlay playsInline />
+                                <button onClick={handleShareScreen}>Share</button> */}
                             </div>
                         }
                         {active === 1 && <>

@@ -21,7 +21,7 @@ const items = [
             },
             {
                 name: "Trung tâm sinh viên",
-                link: './round'
+                link: './center'
             }
         ]
     },

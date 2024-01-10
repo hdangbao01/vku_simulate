@@ -1,10 +1,9 @@
-import { useFrame, useLoader, useThree } from '@react-three/fiber'
+import { useFrame, useLoader } from '@react-three/fiber'
 import { useRef } from 'react';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
-// import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
-// import { Scene } from 'three';
+import { Html } from '@react-three/drei';
 
-const Lecture = ({ rotation, onClick }) => {
+const Lecture = ({ rotation, onClick, posObject, nameObject, setNameObject, objectShow }) => {
     // const gltf = useLoader(GLTFLoader, process.env.PUBLIC_URL + 'models/vku_object.glb')
     const gltf = useLoader(GLTFLoader, process.env.PUBLIC_URL + 'models/lecture_name.glb')
 
@@ -22,30 +21,32 @@ const Lecture = ({ rotation, onClick }) => {
         }
     });
 
-    // const scene = new Scene();
-    // const { scene } = useThree()
-
-    // const moonDiv = document.createElement('div');
-    // moonDiv.className = 'label';
-    // moonDiv.textContent = 'HelloHelloHelloHelloHelloHelloHelloHelloHelloHello';
-    // moonDiv.style.backgroundColor = 'black';
-
-    // const moonLabel = new CSS2DObject(moonDiv);
-    // moonLabel.position.set(0, 10, 0);
-    // moonLabel.center.set(0, 1);
-    // scene.add(moonLabel);
-    // moonLabel.layers.set(0);
-
-    // const p = document.createElement('p')
-    // p.textContent = 'HelloHelloHelloHelloHelloHelloHelloHelloHelloHello'
-    // const cP = new CSS2DObject(p)
-    // scene.add(cP)
-    // cP.position.set(0, 20, 0)
-
     return (
-        <mesh ref={sphereRef} castShadow onClick={(e) => onClick(e)}>
-            <primitive object={gltf.scene} />
-        </mesh>
+        <group>
+            <mesh ref={sphereRef} castShadow onClick={(e) => onClick(e)}>
+                <primitive object={gltf.scene} />
+            </mesh>
+            {nameObject &&
+                <mesh position={posObject}>
+                    <Html>
+                        <div className='fixed bottom-6 left-6 z-20 m-6 w-60 bg-white p-4'>
+                            <img className='w-60 h-44 rounded-md object-cover'
+                                src={objectShow?.image}
+                                alt='object 3D' />
+                            <div>
+                                <p className='font-semibold text-lg mt-3 mb-2'>
+                                    {objectShow?.name}
+                                </p>
+                                <p className='text-sm'>Thông tin: {objectShow?.description}</p>
+                                <div className='flex flex-row-reverse'>
+                                    <button className='mt-2' onClick={() => setNameObject('')}>Tắt</button>
+                                </div>
+                            </div>
+                        </div>
+                    </Html>
+                </mesh>
+            }
+        </group>
     )
 }
 

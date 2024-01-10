@@ -140,6 +140,13 @@ function Admin() {
                                             </svg>User
                                         </p>
                                     </li>
+                                    <li className="" onClick={() => setActive(2)}>
+                                        <p href="#" className={`w-full cursor-pointer inline-flex items-center p-4 text-lg border-b-2 rounded-t-lg dark:text-white group ${active === 2 && 'dark:text-blue-500 dark:border-blue-500 border-blue-600 text-blue-600'}`}>
+                                            <svg className={`w-4 h-4 me-2 text-gray-400 dark:text-white ${active === 2 && 'text-blue-600 dark:text-blue-500'}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6Zm0 13a8.949 8.949 0 0 1-4.951-1.488A3.987 3.987 0 0 1 9 13h2a3.987 3.987 0 0 1 3.951 3.512A8.949 8.949 0 0 1 10 18Z" />
+                                            </svg>Model
+                                        </p>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
@@ -151,22 +158,6 @@ function Admin() {
                         {active === 0 &&
                             <div className="text-3xl mx-4 my-4">
                                 <p>VKU SIMULATE</p>
-                                {/* Call Video */}
-                                {/* <form onSubmit={handleJoin}>
-                                    <label htmlFor="name">Name</label>
-                                    <input
-                                        type="text" id="name" className="text-black p-2"
-                                        value={email} onChange={e => setEmail(e.target.value)}
-                                    />
-                                    <label htmlFor="room">Room</label>
-                                    <input
-                                        type="text" id="room" className="text-black p-2"
-                                        value={room} onChange={e => setRoom(e.target.value)}
-                                    />
-                                    <button className="border-2 border-solid border-white p-2">Join</button>
-                                </form> */}
-                                {/* <video ref={shareScreen} autoPlay playsInline />
-                                <button onClick={handleShareScreen}>Share</button> */}
                             </div>
                         }
                         {active === 1 && <>
@@ -183,6 +174,47 @@ function Admin() {
                                             </th>
                                             <th scope="col" className="px-6 py-3">
                                                 Role
+                                            </th>
+                                            <th scope="col" className="px-6 py-3">
+                                                Action
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="">
+                                        {listUser.map(iUser => (
+                                            <tr key={iUser.id} className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
+                                                <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                                    {iUser?.displayName}
+                                                </th>
+                                                <td className="px-6 py-4">
+                                                    {iUser?.email}
+                                                </td>
+                                                <td className="px-6 py-4 font-semibold">
+                                                    {iUser?.role}
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <p className="cursor-pointer font-medium text-blue-600 dark:text-white hover:underline flex items-center" onClick={() => handleSelectEdit(iUser?.uid)}>Edit<FiEdit className="ml-2" /></p>
+                                                    <p className="cursor-pointer font-medium text-blue-600 dark:text-white hover:underline flex items-center" onClick={() => handleDelete(iUser?.id)}>Delete<RiDeleteBin6Line className="ml-2" /></p>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div></>}
+                        {active === 2 && <>
+                            <div className="text-3xl mx-4 my-4">Table Model</div>
+                            <div className="">
+                                <table className="w-full text-base text-left rtl:text-right text-gray-500 dark:text-white">
+                                    <thead className="text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-white">
+                                        <tr>
+                                            <th scope="col" className="px-6 py-3">
+                                                Name
+                                            </th>
+                                            <th scope="col" className="px-6 py-3">
+                                                Image
+                                            </th>
+                                            <th scope="col" className="px-6 py-3">
+                                                Description
                                             </th>
                                             <th scope="col" className="px-6 py-3">
                                                 Action

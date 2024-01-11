@@ -18,7 +18,8 @@ const publicRoutes = [
     { path: '/design', component: Design },
     { path: '/meeting', component: Meeting, auth: true },
     { path: '/login', component: Login, auth: true },
-    { path: '/admin', component: Admin, socket: true },
+    { path: '/admin', component: Admin },
+    // { path: '/admin', component: Admin, socket: true },
     { path: '/call', component: RoomCall, socket: true }
     // { path: '/call/:roomId', component: RoomCall, socket: true }
 ]

@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import classNames from 'classnames/bind'
 import styles from '~/components/Load/Load.module.scss'
 import { Dialog, Transition } from "@headlessui/react";
@@ -7,8 +7,6 @@ import { collection, deleteDoc, doc, onSnapshot, updateDoc } from "firebase/fire
 import { db } from "~/firebase/config";
 import { FiEdit } from "react-icons/fi";
 import { RiDeleteBin6Line } from "react-icons/ri";
-import { useSocket } from "~/Context/SocketProvider";
-import { useNavigate } from "react-router-dom";
 
 const cx = classNames.bind(styles)
 
@@ -21,42 +19,6 @@ function Admin() {
     const [listUser, setListUser] = useState({})
     const [editUser, setEditUser] = useState({})
     const [role, setRole] = useState('')
-
-    const navigate = useNavigate()
-
-    //Call Video
-    // const [email, setEmail] = useState('')
-    // const [room, setRoom] = useState('')
-    const shareScreen = useRef()
-
-    const handleShareScreen = () => {
-        navigator.mediaDevices.getDisplayMedia({ video: true })
-            .then((stream) => {
-                shareScreen.current.srcObject = stream
-            }).catch((error) => {
-                console.error('Unable to access the camera/webcam!', error)
-            })
-    }
-
-    // const socket = useSocket()
-
-    // const handleJoin = useCallback((e) => {
-    //     e.preventDefault()
-    //     socket.emit('room:join', { email, room })
-    // }, [email, room, socket])
-
-    // const handleJoinRoom = useCallback((data) => {
-    //     const { email, room } = data
-    //     navigate(`/call/${room}`)
-    // }, [navigate])
-
-    // useEffect(() => {
-    //     socket.on('room:join', handleJoinRoom)
-
-    //     return () => {
-    //         socket.off('room:join', handleJoinRoom)
-    //     }
-    // }, [socket, handleJoinRoom])
 
     // Admin
     useEffect(() => {
@@ -81,6 +43,7 @@ function Admin() {
                 ...doc.data(),
                 id: doc.id
             }))
+            console.log(data);
             setListUser(data)
         })
 
@@ -117,6 +80,8 @@ function Admin() {
         );
     };
 
+    console.log(listUser);
+
     return (
         <div>
             {loading ? <Load /> :
@@ -151,22 +116,6 @@ function Admin() {
                         {active === 0 &&
                             <div className="text-3xl mx-4 my-4">
                                 <p>VKU SIMULATE</p>
-                                {/* Call Video */}
-                                {/* <form onSubmit={handleJoin}>
-                                    <label htmlFor="name">Name</label>
-                                    <input
-                                        type="text" id="name" className="text-black p-2"
-                                        value={email} onChange={e => setEmail(e.target.value)}
-                                    />
-                                    <label htmlFor="room">Room</label>
-                                    <input
-                                        type="text" id="room" className="text-black p-2"
-                                        value={room} onChange={e => setRoom(e.target.value)}
-                                    />
-                                    <button className="border-2 border-solid border-white p-2">Join</button>
-                                </form> */}
-                                <video ref={shareScreen} autoPlay playsInline />
-                                <button onClick={handleShareScreen}>Share</button>
                             </div>
                         }
                         {active === 1 && <>

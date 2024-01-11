@@ -7,7 +7,7 @@ import Meeting from '~/pages/Meeting';
 import Login from '~/pages/Login';
 import Design from '~/pages/Design';
 import Admin from '~/pages/Admin';
-import RoomCall from '~/components/RoomCall';
+// import RoomCall from '~/components/RoomCall';
 
 const publicRoutes = [
     { path: '/', component: Home },
@@ -20,7 +20,7 @@ const publicRoutes = [
     { path: '/login', component: Login, auth: true },
     { path: '/admin', component: Admin },
     // { path: '/admin', component: Admin, socket: true },
-    { path: '/call', component: RoomCall, socket: true }
+    // { path: '/call', component: RoomCall, socket: true }
     // { path: '/call/:roomId', component: RoomCall, socket: true }
 ]
 

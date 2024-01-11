@@ -1,7 +1,7 @@
 import Header from "~/components/Header";
 import { Fragment, Suspense, useEffect, useRef, useState } from "react";
 import { Canvas, useLoader } from '@react-three/fiber'
-import { DirectionalLightHelper, MeshStandardMaterial, Vector3 } from 'three';
+import { MeshStandardMaterial, Vector3 } from 'three';
 import { Environment, OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import Load from "~/components/Load";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";

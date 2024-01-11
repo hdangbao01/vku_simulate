@@ -4,11 +4,9 @@ import { IoClose } from "react-icons/io5";
 import { AppContext } from "~/Context/AppProvider";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "~/firebase/config";
-import { AuthContext } from "~/Context/AuthProvider";
 
 function Modal() {
     const { openModal, setOpenModal } = useContext(AppContext)
-    const { data } = useContext(AuthContext)
     const cancelButtonRef = useRef(null)
     const [name, setName] = useState('')
     const [decs, setDecs] = useState('')

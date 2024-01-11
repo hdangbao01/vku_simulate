@@ -2,14 +2,14 @@ import { auth } from "~/firebase/config";
 import { onAuthStateChanged } from 'firebase/auth'
 import { useNavigate } from 'react-router-dom'
 import { createContext, useEffect, useState } from "react";
-import Load from "~/components/Load";
+// import Load from "~/components/Load";
 
 export const AuthContext = createContext()
 
 function AuthProvider({ children }) {
     const [data, setData] = useState({})
     const navigate = useNavigate()
-    const [isLoading, setIsLoading] = useState(true)
+    // const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
         const unsub = onAuthStateChanged(auth, (data) => {
@@ -17,12 +17,12 @@ function AuthProvider({ children }) {
                 const { displayName, email, uid, photoURL } = data
                 setData({ displayName, email, uid, photoURL })
                 navigate('/meeting')
-                setIsLoading(false);
+                // setIsLoading(false);
                 return
             } else {
-                setIsLoading(false)
-                navigate('/login?email=&password=')
-                // navigate('/login')
+                // setIsLoading(false)
+                // navigate('/login?email=&password=')
+                navigate('/login')
             }
         })
 

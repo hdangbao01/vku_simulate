@@ -6,7 +6,7 @@ import { Html, useProgress } from '@react-three/drei';
 const cx = classNames.bind(styles)
 
 const Load = () => {
-    const { active, progress, errors, item, loaded, total } = useProgress();
+    const { progress } = useProgress();
 
     return (
         <Html center>

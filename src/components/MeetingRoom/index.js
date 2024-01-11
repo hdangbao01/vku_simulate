@@ -46,21 +46,6 @@ function MeetingRoom() {
     const location = useLocation()
     const navigate = useNavigate();
 
-    // console.log(database._repoInternal);
-    // const handleRef = () => {
-    //     set(ref(database, 'meets'), {
-    //         audio: true,
-    //         video: false,
-    //         screen: false,
-    //     })
-    //         .then(() => {
-    //             console.log("Success");
-    //         })
-    //         .catch((error) => {
-    //             console.log("Failed");
-    //         });
-    // }
-
     // handle Website
     const handleSignOut = async () => {
         await signOut(auth).then(() => {
@@ -167,6 +152,7 @@ function MeetingRoom() {
     }, [allMess.length]);
 
     // handle 3D
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const materialWall = new MeshStandardMaterial({ color: "#E7CBA9" });
 
     const room = useLoader(GLTFLoader, process.env.PUBLIC_URL + 'models/room_model.glb')
@@ -207,7 +193,7 @@ function MeetingRoom() {
             }
         });
 
-    }, [room, chair, wall_room, floor]);
+    }, [room, chair, wall_room, floor, materialWall]);
 
     const Room = () => {
         return <mesh>
@@ -279,7 +265,6 @@ function MeetingRoom() {
         </mesh>
     }
 
-    // const link = process.env.PUBLIC_URL + 'videos/mv.mp4'
     // const [streamer, setStreamer] = useState(null)
     // const userVideo = useRef();
 
@@ -435,16 +420,18 @@ function MeetingRoom() {
                     Thành viên: {!!location.search === true && members.map(member => <img key={member?.uid} className="w-9 h-9 rounded-full object-cover ml-2" src={member?.photoURL} alt="Avatar" />)}
                 </div>
                 <div className="overflow-auto h-52 flex flex-col">
-                    {allMess.map(mess => <div ref={refMess} key={mess?.id} className="flex items-center mb-2">
-                        <img className="w-9 h-9 rounded-full object-cover mx-2" src={mess?.photoURL} alt="Avatar" />
-                        <div>
-                            <div className="flex items-center">
-                                <p className="mr-2 font-medium">{mess?.displayName}</p>
-                                <p className="font-light">{formatDate(mess?.createdAt?.seconds)}</p>
+                    {!!location.search === true &&
+                        allMess.map(mess => <div ref={refMess} key={mess?.id} className="flex items-center mb-2">
+                            <img className="w-9 h-9 rounded-full object-cover mx-2" src={mess?.photoURL} alt="Avatar" />
+                            <div>
+                                <div className="flex items-center">
+                                    <p className="mr-2 font-medium">{mess?.displayName}</p>
+                                    <p className="font-light">{formatDate(mess?.createdAt?.seconds)}</p>
+                                </div>
+                                <p className="font-light">{mess?.text}</p>
                             </div>
-                            <p className="font-light">{mess?.text}</p>
-                        </div>
-                    </div>)}
+                        </div>)
+                    }
                 </div>
                 <div className="w-full flex items-center absolute bottom-2 px-2">
                     <input className="w-full font-light border border-bborder-b-gray-950 rounded-3xl px-4 py-2" type="text" placeholder="Nhập gì đó..."
@@ -489,10 +476,11 @@ function MeetingRoom() {
                     <Wall />
                     <Floor />
                     {/* {selectedRoomId && <PlaneVideo />} */}
-                    <PlaneVideo screen={screen} clickScreen={handleClickScreen} />
+                    {!!location.search === true &&
+                        <PlaneVideo screen={screen} clickScreen={handleClickScreen} />
+                    }
                 </Suspense>
                 <ambientLight intensity={0.5} />
-                {/* <axesHelper args={[100]} /> */}
                 <LightWithHelper />
             </Canvas>
             {!selectedRoomId &&

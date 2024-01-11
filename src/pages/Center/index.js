@@ -1,10 +1,9 @@
 import Header from "~/components/Header";
 import { Suspense, useEffect, useRef } from "react";
-import { Canvas, useLoader, useThree } from '@react-three/fiber'
+import { Canvas, useLoader } from '@react-three/fiber'
 import { Environment, OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import Load from "~/components/Load";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-import { DirectionalLightHelper } from "three";
 
 function LightWithHelper() {
     const lightRef = useRef();
@@ -18,7 +17,7 @@ function LightWithHelper() {
     //         return () => {
     //             if (helper) {
     //                 scene.remove(helper);
-    //             }
+    //             }F
     //         };
     //     }
     // }, [scene]);

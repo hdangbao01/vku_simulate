@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app"
 
-import { connectAuthEmulator, getAuth, GoogleAuthProvider } from "firebase/auth"
-import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore'
+import { getAuth, GoogleAuthProvider } from "firebase/auth"
+import { getFirestore } from 'firebase/firestore'
 // import { getDatabase, connectDatabaseEmulator } from "firebase/database";
 
 const firebaseConfig = {
@@ -30,8 +30,8 @@ const db = getFirestore(app)
 
 const provider = new GoogleAuthProvider()
 
-connectAuthEmulator(auth, "http://127.0.0.1:9099");
-connectFirestoreEmulator(db, 'localhost', 8088)
+// connectAuthEmulator(auth, "http://127.0.0.1:9099");
+// connectFirestoreEmulator(db, 'localhost', 8088)
 // connectDatabaseEmulator(database, "127.0.0.1", 9000);
 
 export { db, auth, provider }
